@@ -1,1 +1,0 @@
-{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"heroku_vk5npqrw.orders"},{"v":1,"key":{"name":1},"name":"name_1","ns":"heroku_vk5npqrw.orders","background":true},{"v":1,"key":{"addr.geo":"2dsphere"},"name":"addr.geo_2dsphere","ns":"heroku_vk5npqrw.orders","background":true,"2dsphereIndexVersion":3}]}
