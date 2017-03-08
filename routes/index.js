@@ -593,7 +593,7 @@ exports = module.exports = (app) => {
     * @apiGroup Orders
     *
     * @apiHeader {String} Authorization User authorization token.
-    * @apiParam {String} route User route string
+    * @apiParam {Object[]} route User route string
     *
     * @apiUse ResponseSuccess
     *

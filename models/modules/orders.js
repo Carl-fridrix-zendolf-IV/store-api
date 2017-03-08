@@ -1,4 +1,5 @@
 var keystone = require('keystone'),
+    mongoose = require('mongoose'),
     Types = keystone.Field.Types;
 
 // Create category model
@@ -15,8 +16,9 @@ Order.add({
     note: { type: String, default: '' },
     createdAt: { type: Types.Datetime, default: Date.now, label: 'Date', noedit: true},
     summary: { type: Number, noedit: true, nodelete: true },
-    statusChangeDate: { type: Types.Datetime, hidden: true },
-    route: { type: String, hidden: true }
+    statusChangeDate: { type: Types.Datetime, hidden: true }
 });
+
+Order.schema.add({ route: mongoose.Schema.Types.Mixed });
 
 Order.register();

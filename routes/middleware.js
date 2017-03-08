@@ -99,6 +99,9 @@ exports.tokenAuthentication = (req, res, next) => {
             if (!data) {
                 return res.status(401).json({result: 'Error', message: 'Undefined user'});
             }
+            else if ((req.path.indexOf('/orders/') > -1) && data.professional && !data.reviewed) {
+                return res.status(403).json({result: 'Error', message: 'Professional unreviewed'});
+            }
             else {
                 req.USER_TOKEN_DATA = decoded;
             }

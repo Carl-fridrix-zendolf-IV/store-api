@@ -12,6 +12,7 @@ const keystone = require('keystone'),
     Order = keystone.list('Orders'), // connect to Orders model
     Payments = keystone.list('Payments'), // connect to Payments model
     Status = keystone.list('Statuses'), // connect to Statuses model
+    Notifications = keystone.list('Notifications'), // connect to Notifications model
 
     index = require('../index'), // get token sectret word
     http = require('http'), // for SMS request
@@ -57,14 +58,11 @@ var generateToken = (phone, id, professional) => {
 
     return token;
 }
-var createPush = (user_id, receiver, text) => {
+var createPush = (user_id, receiver, notify_id) => {
     let api_key;
     let app_id;
 
-    console.log(user_id, '<-- user ID for PUSH');
-    console.log(receiver, '<-- receiver type');
-    console.log(text, '<-- message for PUSH');
-
+    // Check who will receive a message
     switch (receiver) {
         case 'CUSTOMER':
             app_id = index.ONE_SIGNAL_CUSTOMERS_APP_ID;
@@ -76,45 +74,67 @@ var createPush = (user_id, receiver, text) => {
             break
     }
 
+    let createRequest = (message) => {
+        var headers = {
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": "Basic " + api_key
+        };
 
-    let message = {
-        app_id: app_id,
-        contents: {"en": text},
-        included_segments: ["All"],
-        filters: [
-            {
-                field: "tag", key: 'user_id', relation: '=', value: user_id
-            }
-        ]
+        var options = {
+            host: "onesignal.com",
+            port: 443,
+            path: "/api/v1/notifications",
+            method: "POST",
+            headers: headers
+        };
+
+        var req = https.request(options, function(res) {
+            res.on('data', function(data) {
+                console.log("Response:");
+                console.log(JSON.parse(data));
+            });
+        });
+
+        req.on('error', function(e) {
+            console.log("ERROR:");
+            console.log(e);
+        });
+
+        req.write(JSON.stringify(message));
+        req.end();
     }
 
-    var headers = {
-        "Content-Type": "application/json; charset=utf-8",
-        "Authorization": "Basic " + api_key
-    };
+    Notifications.model.findOne({number: Number(notify_id)}).then(data => {
+        console.log(app_id, '<-- app ID');
 
-    var options = {
-        host: "onesignal.com",
-        port: 443,
-        path: "/api/v1/notifications",
-        method: "POST",
-        headers: headers
-    };
+        console.log(data.message, "<-- message");
+        console.log(data.headings, '<-- title')
 
-    var req = https.request(options, function(res) {
-        res.on('data', function(data) {
-            console.log("Response:");
-            console.log(JSON.parse(data));
-        });
-    });
+        console.log(data.url, '<-- title');
+        console.log(data.app_page, '<-- app page name');
 
-    req.on('error', function(e) {
-        console.log("ERROR:");
-        console.log(e);
-    });
+        console.log(user_id, '<-- user ID');
 
-    req.write(JSON.stringify(message));
-    req.end();
+        let message = {
+            app_id: app_id,
+            contents: {"en": data.message},
+            headings: {"en": data.headings},
+            url: data.url,
+            data: {'open_page': data.app_page},
+            included_segments: ["All"],
+            filters: [
+                {
+                    field: "tag", key: 'user_id', relation: '=', value: user_id.toString()
+                }
+            ]
+        };
+
+        console.log(JSON.stringify(message));
+
+        createRequest(message);
+    }, err => {
+        console.log('Create PUSH error', err.text);
+    })
 }
 
 exports = module.exports = {
@@ -599,7 +619,7 @@ exports = module.exports = {
                 if (data) {
                     distance = CalculateDistance(data.addr.geo[0], data.addr.geo[1], user_location[0], user_location[1]);
                     if (distance <= 15)
-                        return createPush(data.customer_id, 'CUSTOMER', 'Professional is here.');
+                        return createPush(data.customer_id, 'CUSTOMER', 100);
                 }
                 else {
                     console.log('Nothing orders');
@@ -639,6 +659,7 @@ exports = module.exports = {
             findObj.cat_id = mongoose.Types.ObjectId(req.query.category);
 
         Product.model.find(findObj)
+            .select({__v: 0, image_src: 0, icon_src: 0, map_src: 0})
             .skip(Number(req.query.skip) || 0)
             .limit(Number(req.query.limit) || 999999)
             .then((data) => {
@@ -1076,22 +1097,26 @@ exports = module.exports = {
                     switch (statusNumber) {
                         // Order update to active status, send PUSH to customer
                         case 0:
-                            createPush(data.customer_id, 'CUSTOMER', 'Professional has begun to fulfill the order.');
+                            createPush(data.customer_id, 'CUSTOMER', 101);
                             break;
+
                         // Order created with status pending, do nothing
                         case 1:
                             break;
+
                         // Order cancelled by professional, send push to customer
                         case 2:
-                            createPush(data.customer_id, 'CUSTOMER', 'Order was rejected by professional.');
+                            createPush(data.customer_id, 'CUSTOMER', 102);
                             break;
+
                         // Order cancelled by customer, send push to professional
                         case 3:
-                            createPush(data.prof_id, 'PROFF', 'Order was canceled by client.');
+                            createPush(data.prof_id, 'PROFF', 103);
                             break;
+
                         // Order complete, send push to customer
                         case 4:
-                            createPush(data.customer_id, 'CUSTOMER', 'The order is complete.');
+                            createPush(data.customer_id, 'CUSTOMER', 104);
                             break;
                     }
                 })
