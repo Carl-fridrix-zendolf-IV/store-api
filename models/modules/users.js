@@ -21,7 +21,8 @@ User.add({
     phone_verified: { type: Boolean, label: 'Phone validated?' },
     user_active: { type: Boolean, default: true, label: 'User active' },
     canAccessKeystone: { type: Boolean, initial: true, default: false, label: 'Admin', dependsOn: {professional: false} },
-    reviewed: { type: Boolean, initial: true, default: false, dependsOn: {professional: true} },
+    reviewed: { type: Boolean, initial: true, default: false, dependsOn: {professional: true}},
+    push_sended: { type: Boolean, default: false, hidden: true },
     location: { type: Types.NumberArray, hidden: false}
 });
 

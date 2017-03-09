@@ -58,7 +58,7 @@ var generateToken = (phone, id, professional) => {
 
     return token;
 }
-var createPush = (user_id, receiver, notify_id) => {
+var createPush = (user_id, receiver, notify_id, order_id) => {
     let api_key;
     let app_id;
 
@@ -105,22 +105,12 @@ var createPush = (user_id, receiver, notify_id) => {
     }
 
     Notifications.model.findOne({number: Number(notify_id)}).then(data => {
-        console.log(app_id, '<-- app ID');
-
-        console.log(data.message, "<-- message");
-        console.log(data.headings, '<-- title')
-
-        console.log(data.url, '<-- title');
-        console.log(data.app_page, '<-- app page name');
-
-        console.log(user_id, '<-- user ID');
-
         let message = {
             app_id: app_id,
             contents: {"en": data.message},
             headings: {"en": data.headings},
             url: data.url,
-            data: {'open_page': data.app_page},
+            data: {'open_page': data.app_page, id: order_id || null},
             included_segments: ["All"],
             filters: [
                 {
@@ -136,6 +126,21 @@ var createPush = (user_id, receiver, notify_id) => {
         console.log('Create PUSH error', err.text);
     })
 }
+var rewiewListener = (() => {
+    let setPushSended = () => {
+        User.model.where({ _id: id }).update({push_sended: true})
+    }
+
+    // Check rewieved users every half part of hour
+    setInterval(() => {
+        User.model.find({$and: [{reviewed: true}, {push_sended: false}, {professional: true}]}).then(data => {
+            for(let item of data) {
+                createPush(item._id, 'PROFF', 105)
+                updateUserModel(item._id);
+            }
+        }, err => { console.log(err); })
+    }, 1800000);
+})()
 
 exports = module.exports = {
     facebookAuth: (req, res) => {
@@ -619,7 +624,7 @@ exports = module.exports = {
                 if (data) {
                     distance = CalculateDistance(data.addr.geo[0], data.addr.geo[1], user_location[0], user_location[1]);
                     if (distance <= 15)
-                        return createPush(data.customer_id, 'CUSTOMER', 100);
+                        return createPush(data.customer_id, 'CUSTOMER', 100, data._id);
                 }
                 else {
                     console.log('Nothing orders');
@@ -1097,7 +1102,7 @@ exports = module.exports = {
                     switch (statusNumber) {
                         // Order update to active status, send PUSH to customer
                         case 0:
-                            createPush(data.customer_id, 'CUSTOMER', 101);
+                            createPush(data.customer_id, 'CUSTOMER', 101, data._id);
                             break;
 
                         // Order created with status pending, do nothing
@@ -1106,17 +1111,17 @@ exports = module.exports = {
 
                         // Order cancelled by professional, send push to customer
                         case 2:
-                            createPush(data.customer_id, 'CUSTOMER', 102);
+                            createPush(data.customer_id, 'CUSTOMER', 102, data._id);
                             break;
 
                         // Order cancelled by customer, send push to professional
                         case 3:
-                            createPush(data.prof_id, 'PROFF', 103);
+                            createPush(data.prof_id, 'PROFF', 103, data._id);
                             break;
 
                         // Order complete, send push to customer
                         case 4:
-                            createPush(data.customer_id, 'CUSTOMER', 104);
+                            createPush(data.customer_id, 'CUSTOMER', 104, data._id);
                             break;
                     }
                 })
