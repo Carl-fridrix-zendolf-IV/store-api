@@ -1,0 +1,21 @@
+extends ../../layouts/base
+
+block header
+    nav(class="navbar navbar-default navbar-fixed-top")
+        div(class="container-fluid")
+            ul(class="nav navbar-nav navbar-right")
+                li
+                    a(href="/keystone") Go to Admin UI
+
+block content
+    div(class="container")
+        div(class="list-group")
+            for item in data.messages
+                a(href=item.link, target="_blank", class="list-group-item")
+                    h4(class="list-group-item-heading")= item.user_info.textName
+                        p
+                            span(class="badge")= item.date
+                            if item.user_info.professional === true
+                                span(class="label label-info", style="margin-left: 10px;") professional
+
+                        p(class="list-group-item-text")= item.message

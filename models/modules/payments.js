@@ -3,7 +3,7 @@ var keystone = require('keystone'),
 
 // Create category model
 var Payment = new keystone.List('Payments', {
-    hidden: true
+    hidden: false
 });
 
 Payment.add({

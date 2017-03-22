@@ -35,10 +35,12 @@ exports.initErrorHandlers = function(req, res, next) {
     }
 
     res.notfound = function(title, message) {
-        res.status(404).render('errors/404', {
-            errorTitle: title,
-            errorMsg: message
-        });
+        res.status(404).json({result: 'Error', message: 'Not found'});
+
+        // res.status(404).render('errors/404', {
+        //     errorTitle: title,
+        //     errorMsg: message
+        // });
     }
 
     next();
@@ -67,9 +69,11 @@ exports.flashMessages = function(req, res, next) {
     Force Authentication header
 */
 exports.tokenAuthentication = (req, res, next) => {
-
     let freeMethods = [
         '/',
+        '/keystone',
+        '/chats',
+        '/chat/detail',
         '/api/public/v0/user/auth',
         '/api/public/v0/user/registration',
         '/api/public/v0/user/restore',

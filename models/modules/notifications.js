@@ -3,7 +3,7 @@ var keystone = require('keystone'),
 
 // Create category model
 var Notifications = new keystone.List('Notifications', {
-    hidden: true,
+    hidden: false,
     map: { name: 'headings' },
     defaultColumns: 'headings, app_page',
 });

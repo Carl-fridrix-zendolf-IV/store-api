@@ -3,7 +3,9 @@ var keystone = require('keystone'),
     Types = keystone.Field.Types;
 
 // Create category model
-var Order = new keystone.List('Orders');
+var Order = new keystone.List('Orders', {
+    defaultSort: '-createdAt'
+});
 
 Order.add({
     name: { type: String, required: true, index: true, initial: true, noedit: true },

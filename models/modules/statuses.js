@@ -3,7 +3,7 @@ var keystone = require('keystone'),
 
 // Create category model
 var Status = new keystone.List('Statuses', {
-    hidden: true
+    hidden: false
 });
 
 Status.add({

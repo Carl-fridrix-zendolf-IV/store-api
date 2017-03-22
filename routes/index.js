@@ -98,9 +98,23 @@ exports = module.exports = (app) => {
     * @apiSuccess {Object} data.professional Professional info.
     */
 
+    // ************ API ROUTING CODE STARTS HERE ******************
     app.get('/', (req, res) => {
         return res.json({result: 'Success', message: 'Welcome to awesome butler hero API'})
     });
+
+    app.get('/keystone/users', (req, res) => {
+        console.log('******* request to "/keystone/users"')
+    })
+
+    app.get('/chat/detail', (req, res) => {
+        let obj = {name: 'Support', id: '123456789', avatarURL: '', roomID: req.query.room.toString()}
+
+        res.cookie('cookie_logininfo', JSON.stringify(obj));
+        res.redirect(302, 'https://butler-hero.org/spika/#main');
+    })
+
+    app.get('/chats', routes.views.chats.chatslist)
 
     /**
     * @api {post} /api/public/v0/user/auth Request User authentication

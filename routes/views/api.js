@@ -127,8 +127,12 @@ var createPush = (user_id, receiver, notify_id, order_id) => {
     })
 }
 var rewiewListener = (() => {
-    let setPushSended = () => {
-        User.model.where({ _id: id }).update({push_sended: true})
+    let setPushSended = (id) => {
+        User.model.findOne({_id: mongoose.Types.ObjectId(id)})
+            .then(data => {
+                data.push_sended = true;
+                data.save((err) => {})
+            })
     }
 
     // Check rewieved users every half part of hour
@@ -136,7 +140,7 @@ var rewiewListener = (() => {
         User.model.find({$and: [{reviewed: true}, {push_sended: false}, {professional: true}]}).then(data => {
             for(let item of data) {
                 createPush(item._id, 'PROFF', 105)
-                updateUserModel(item._id);
+                setPushSended(item._id);
             }
         }, err => { console.log(err); })
     }, 1800000);

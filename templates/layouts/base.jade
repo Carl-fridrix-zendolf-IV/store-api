@@ -9,24 +9,22 @@ html
         title= title || 'My Keystone Website'
         link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
 
+        link(rel="stylesheet" href="/css/bootstrap.min.css")
+
 
 
         block css
         block head
-    body
+    body(style="padding-top: 80px;")
+        #header
 
-        #header My Keystone Website
+            block header
 
-        #body
-
-            block intro
-
-            +flash-messages(messages)
-
+        #content
             block content
 
         #footer Powered by <a href='http://keystonejs.com', target='_blank'>KeystoneJS</a>.
 
-    
+
 
     block js
