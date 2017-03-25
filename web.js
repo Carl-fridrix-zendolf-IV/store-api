@@ -1,5 +1,6 @@
-// Object.keys(require.cache).forEach(function(key) { delete require.cache[key] })
-// console.log(require.cache);
+Object.keys(require.cache).forEach(function(key) { delete require.cache[key] })
+console.log(require.cache);
+
 
 var keystone = require('keystone');
 keystone.init({
@@ -41,7 +42,7 @@ keystone.set('routes', require('./routes'));
 keystone.set( 'nav', {
     chats: [
         {
-            label: "Chats list",
+            label: "Support Chats",
             key : "chats",
             path : "/chats"
         }
