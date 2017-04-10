@@ -1,5 +1,29 @@
-Object.keys(require.cache).forEach(function(key) { delete require.cache[key] })
-console.log(require.cache);
+// Object.keys(require.cache).forEach(function(key) { delete require.cache[key] })
+// console.log(require.cache);
+
+console.log(process.env.ENV_VARIABLE, '<-- ENV_VARIABLE');
+
+let port;
+let mongo;
+
+switch (process.env.ENV_VARIABLE) {
+    case 'PRODUCTION':
+        port = 9000;
+        mongo = 'mongodb://admin:CV88FBNWCdBqA5cv@localhost:27017/store';
+        break;
+    case 'TEST':
+        port = 9001;
+        mongo = 'mongodb://admin:CV88FBNWCdBqA5cv@localhost:27017/test';
+        break;
+    case 'DEV':
+        port = 9002;
+        mongo = 'mongodb://admin:CV88FBNWCdBqA5cv@localhost:27017/test';
+        break;
+    default:
+        port = 9000;
+        mongo = 'mongodb://admin:CV88FBNWCdBqA5cv@localhost:27017/store';
+        break;
+}
 
 
 var keystone = require('keystone');
@@ -7,10 +31,8 @@ keystone.init({
 
     'name': 'Butler Hero',
 
-    'port': 3000,
-
-    // 'port': 9001,
-    // 'host': "127.0.0.1",
+    'port': port,
+    'host': "127.0.0.1",
 
     'favicon': 'public/favicon.ico',
     'less': 'public',
@@ -21,14 +43,12 @@ keystone.init({
 
     'auto update': true,
 
-    'mongo': 'mongodb://admin:CV88FBNWCdBqA5cv@localhost:27017/store',
-    // 'mongo': 'mongodb://admin:Vzz@ds135029.mlab.com:35029/heroku_vk5npqrw',
+    'mongo': mongo,
 
     'session': true,
     'auth': true,
     'user model': 'User',
     'cookie secret': 'ep8&nBQQm9'
-
 });
 
 require('./models');
