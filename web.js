@@ -26,7 +26,6 @@ switch (process.env.ENV_VARIABLE) {
 
 var keystone = require('keystone');
 keystone.init({
-
     'name': 'Butler Hero',
 
     'port': port,
