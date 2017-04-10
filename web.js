@@ -1,6 +1,4 @@
 // Object.keys(require.cache).forEach(function(key) { delete require.cache[key] })
-// console.log(require.cache);
-
 console.log(process.env.ENV_VARIABLE, '<-- ENV_VARIABLE');
 
 let port;
