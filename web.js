@@ -20,7 +20,7 @@ keystone.init({
     'view engine': 'jade',
 
     'auto update': true,
-    
+
     'mongo': 'mongodb://admin:CV88FBNWCdBqA5cv@localhost:27017/store',
     // 'mongo': 'mongodb://admin:Vzz@ds135029.mlab.com:35029/heroku_vk5npqrw',
 
