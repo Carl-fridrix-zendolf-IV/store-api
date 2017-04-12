@@ -25,6 +25,7 @@ $ npm start
 ```
 
 ### How to use?
+Before start please add setup ENV_VARIABLE (DEV, TEST or PRODUCTION)!
 When code started, you need to open you Browser and enter one of this links:
 http://localhost:3000 - for API welcome message
 http://localhost:3000/apidoc - for API documentation
