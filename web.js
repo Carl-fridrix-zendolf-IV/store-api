@@ -27,8 +27,6 @@ console.log('\n');
 console.log(port, '<-- Keystone API port');
 console.log(mongo, '<-- Keystone Mongo url', '\n');
 
-require('./spika/src/server/main')();
-
 var keystone = require('keystone');
 keystone.init({
     'name': 'Butler Hero',
@@ -68,3 +66,6 @@ keystone.set( 'nav', {
 });
 
 keystone.start();
+
+// import Spika
+require('./spika/src/server/main')();
