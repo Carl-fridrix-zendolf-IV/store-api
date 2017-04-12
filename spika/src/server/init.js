@@ -4,8 +4,8 @@
     // Class ------------------------------------------------
     var Config = {};
     
-    Config.host = "95.85.42.237";
-    Config.port = 9002;
+    Config.host = "193.124.189.99";
+    Config.port = 9003;
     Config.urlPrefix = '/spika';
     Config.socketNameSpace = '/spika';
 

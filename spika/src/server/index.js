@@ -2,10 +2,9 @@ var init = require('./init.js');
 var express = require('express');
 var _ = require('lodash');
 
-var clearRequire = require('clear-require');
-clearRequire.all();
-
-console.log(require.cache);
+// var clearRequire = require('clear-require');
+// clearRequire.all();
+// console.log(require.cache);
 
 var Settings = require('./lib/Settings');
 
@@ -47,27 +46,16 @@ var spika = function(app,io,options){
                         ok: true,
                         message : "test"
                     });
-                   
             }
-            
-        });        
-        
+        });
     };
-
 
     this.sendMessage = function(userID,param,callBack){
-                
         var SendMessageLogic = require("./Logics/SendMessage");
-
         SendMessageLogic.execute(userID,param,function(sendMessageResult){
-            
             if(callBack) callBack(sendMessageResult);
-            
-        });        
-        
+        });
     };
-
-
 }
 
 spika.prototype.options = {};

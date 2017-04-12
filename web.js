@@ -1,5 +1,5 @@
 // Object.keys(require.cache).forEach(function(key) { delete require.cache[key] })
-console.log(process.env.ENV_VARIABLE, '<-- ENV_VARIABLE');
+// console.log(process.env.ENV_VARIABLE, '<-- ENV_VARIABLE');
 
 let port;
 let mongo;
@@ -23,6 +23,7 @@ switch (process.env.ENV_VARIABLE) {
         break;
 }
 
+require('./spika/src/server/main')();
 
 var keystone = require('keystone');
 keystone.init({
