@@ -1,7 +1,7 @@
 node_modules
 temp
 data
-# dump
+dump
 web.js
 
 .idea
