@@ -27,7 +27,7 @@ console.log('\n');
 console.log(port, '<-- Keystone API port');
 console.log(mongo, '<-- Keystone Mongo url', '\n');
 
-process.env.MAIN_PORT = port;
+process.env.PORT = port;
 
 var keystone = require('keystone');
 keystone.init({

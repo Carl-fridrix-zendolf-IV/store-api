@@ -1,11 +1,11 @@
 (function(global) {
     "use strict;"
-
+    
     // Class ------------------------------------------------
     var Config = {};
     
     Config.host = "193.124.189.99";
-    Config.port = process.env.MAIN_PORT + 100;
+    Config.port = Number(process.env.PORT) + 100;
     Config.urlPrefix = '/spika';
     Config.socketNameSpace = '/spika';
 
