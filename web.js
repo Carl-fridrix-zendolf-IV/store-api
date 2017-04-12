@@ -23,6 +23,10 @@ switch (process.env.ENV_VARIABLE) {
         break;
 }
 
+console.log('\n');
+console.log(port, '<-- Keystone API port');
+console.log(mongo, '<-- Keystone Mongo url', '\n');
+
 require('./spika/src/server/main')();
 
 var keystone = require('keystone');

@@ -17,6 +17,6 @@ module.exports = () => {
     var SpikaServer = new spika(app,io,init);
 
     server.listen(init.port, function(){
-        console.log('Server listening on port ' + init.port + '!');
+        console.log('Spika server listening on port ' + init.port + '!');
     });
 }
