@@ -5,7 +5,7 @@
     var Config = {};
     
     Config.host = "193.124.189.99";
-    Config.port = 9003;
+    Config.port = process.env.MAIN_PORT + 100;
     Config.urlPrefix = '/spika';
     Config.socketNameSpace = '/spika';
 
