@@ -673,9 +673,9 @@ exports = module.exports = {
             .limit(Number(req.query.limit) || 999999)
             .then((data) => {
                 for (let item of data) {
-                    item.image.filename = 'https://' + req.hostname + '/files/' + item.image.filename;
-                    item.icon.filename = 'https://' + req.hostname + '/files/' + item.icon.filename;
-                    item.map_icon.filename = 'https://' + req.hostname + '/files/' + item.map_icon.filename;
+                    item.image.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + item.image.filename;
+                    item.icon.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + item.icon.filename;
+                    item.map_icon.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + item.map_icon.filename;
                 }
 
                 return res.json({
@@ -865,9 +865,9 @@ exports = module.exports = {
                     delete item.productObjects;
 
                     for (let i of item.products) {
-                        i.image.filename = 'https://' + req.hostname + '/files/' + i.image.filename;
-                        i.icon.filename = 'https://' + req.hostname + '/files/' + i.icon.filename;
-                        i.map_icon.filename = 'https://' + req.hostname + '/files/' + i.map_icon.filename;
+                        i.image.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + i.image.filename;
+                        i.icon.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + i.icon.filename;
+                        i.map_icon.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + i.map_icon.filename;
                     }
 
                     item.status = item.status_obj[0][0];
