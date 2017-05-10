@@ -7,7 +7,7 @@ var keystone = require('keystone'),
 // Create category model
 var Product = new keystone.List('Products', {
     defaultColumns: 'name, price, available',
-    label: 'skills'
+    label: 'Skills'
 });
 
 var iconStorage = new keystone.Storage({

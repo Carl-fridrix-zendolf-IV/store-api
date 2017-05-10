@@ -10,10 +10,15 @@ var User = new keystone.List('User', {
     map: { name: 'name' }
 });
 
+// TODO: Add avatar, grade relation and language relation (only for proff) multiple select
 User.add({
     name: { type: Types.Name, required: true, index: true, initial: true },
-    phone: { type: String, required: true, index: true, initial: true, unique: true },
+    phone: { type: String, required: true, index: {unique: true}, initial: true },
     email: { type: Types.Email, initial: false, required: false },
+    // avatar: { type: Types} // ????
+    grades: {type: Types.Relationship, ref: 'Grades', many: true, dependsOn: { professional: true } },
+    languages: {type: Types.Relationship, ref: 'Languages', many: true, dependsOn: { professional: true } },
+    rating: { type: Types.Number, default: 0},
     password: { type: Types.Password, required: true, initial: true },
     passCode: { type: String, hidden: true },
     facebook_id: { type: String, hidden: true },
