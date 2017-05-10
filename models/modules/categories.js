@@ -2,7 +2,9 @@ var keystone = require('keystone'),
     Types = keystone.Field.Types;
 
 // Create category model
-var Category = new keystone.List('Categories');
+var Category = new keystone.List('Categories', {
+    hidden: true
+});
 
 Category.add({
     name: { type: String, required: true, index: true, initial: true },

@@ -5,3 +5,5 @@ require('./modules/statuses.js');
 require('./modules/payments.js');
 require('./modules/orders.js');
 require('./modules/notifications.js');
+require('./modules/grades.js');
+require('./modules/languages.js');

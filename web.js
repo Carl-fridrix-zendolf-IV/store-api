@@ -17,6 +17,10 @@ switch (process.env.ENV_VARIABLE) {
         port = 9002;
         mongo = 'mongodb://admin:CV88FBNWCdBqA5cv@localhost:27017/test';
         break;
+    case 'LOCAL':
+        port = 3000;
+        mongo = 'mongodb://localhost:27017/butler';
+        break;
     default:
         port = 9000;
         mongo = 'mongodb://admin:CV88FBNWCdBqA5cv@localhost:27017/store';
@@ -63,8 +67,8 @@ keystone.set( 'nav', {
             path : "/chats"
         }
     ],
-    content: ['users', 'categories', 'products', 'orders'],
-    services: ['notifications', 'payments', 'statuses']
+    content: ['users', 'products', 'orders'],
+    skills: ['notifications', 'payments', 'statuses', 'grades', 'languages']
 });
 
 keystone.start();
