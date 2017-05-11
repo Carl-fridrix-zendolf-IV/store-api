@@ -608,8 +608,6 @@ exports = module.exports = (app) => {
      * @apiName Grades list
      * @apiGroup Services
      *
-     * @apiHeader {String} Authorization User authorization token.
-     *
      * @apiUse ResponseSuccess
      * @apiSuccess {Object[]} data Data object
      * @apiSuccess {String} data._id Grade ID.
@@ -625,8 +623,6 @@ exports = module.exports = (app) => {
      * @api {get} /api/public/v0/services/languages Get languages list
      * @apiName Languages list
      * @apiGroup Services
-     *
-     * @apiHeader {String} Authorization User authorization token.
      *
      * @apiUse ResponseSuccess
      * @apiSuccess {Object[]} data Data object
