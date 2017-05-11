@@ -645,32 +645,30 @@ exports = module.exports = {
     },
 
     categories: (req, res) => {
-        Category.paginate({
-            page: req.query.page || 1,
-            perPage: req.query.page_limit || 999999
-        })
-        .where('available', true)
-        .select({available: 0, createdAt: 0, author: 0, small_description: 0, __v: 0})
-        .exec((err, result) => {
-            if (err)
-                return res.status(500).json({result: 'Error', message: err.message});
 
-            return res.json({
-                result: "Success",
-                message: "",
-                total: result.total,
-                data: result.results
-            })
-        })
+        return res.status(404).json({result: "Error", message: 'Page not found'});
+
+        // Category.paginate({
+        //     page: req.query.page || 1,
+        //     perPage: req.query.page_limit || 999999
+        // })
+        // .where('available', true)
+        // .select({available: 0, createdAt: 0, author: 0, small_description: 0, __v: 0})
+        // .exec((err, result) => {
+        //     if (err)
+        //         return res.status(500).json({result: 'Error', message: err.message});
+        //
+        //     return res.json({
+        //         result: "Success",
+        //         message: "",
+        //         total: result.total,
+        //         data: result.results
+        //     })
+        // })
     },
     products: (req, res) => {
-        let findObj = new Object();
-
-        if (req.query.category)
-            findObj.cat_id = mongoose.Types.ObjectId(req.query.category);
-
-        Product.model.find(findObj)
-            .select({__v: 0, image_src: 0, icon_src: 0, map_src: 0})
+        Product.model.find()
+            .select({__v: 0, image_src: 0, icon_src: 0, map_src: 0, cat_id: 0, locations: 0, count: 0})
             .skip(Number(req.query.skip) || 0)
             .limit(Number(req.query.limit) || 999999)
             .then((data) => {

@@ -356,8 +356,8 @@ exports = module.exports = (app) => {
     app.post('/api/public/v0/user/location', routes.views.api.setLocation)
 
     /**
-    * @api {get} /api/public/v0/store/categories Get categories list
-    * @apiName Categories list
+    * @api {get} /api/public/v0/store/categories Get categories list [DEPRECATED]
+    * @apiName Categories list [DEPRECATED]
     * @apiGroup Store
     *
     * @apiHeader {String} Authorization User authorization token.
@@ -376,13 +376,12 @@ exports = module.exports = (app) => {
     app.get('/api/public/v0/store/categories', routes.views.api.categories);
 
     /**
-    * @api {get} /api/public/v0/store/products Get products list
-    * @apiName Products list
+    * @api {get} /api/public/v0/store/skills Get skills list
+    * @apiName Skills list
     * @apiGroup Store
     *
     * @apiHeader {String} Authorization User authorization token.
     *
-    * @apiParam {String} [category] Filter by category.
     * @apiParam {String} [skip] Filter for skiping elements.
     * @apiParam {String} [limit] Filter for limiting data array (Default: 999999).
     *
@@ -393,23 +392,12 @@ exports = module.exports = (app) => {
     * @apiSuccess {String} data.name Product name.
     * @apiSuccess {String} data.price Product price.
     * @apiSuccess {String} data.description Product description.
-    * @apiSuccess {String} data.cat_id Product parent category ID.
     * @apiSuccess {String} data.image Link to product image.
     * @apiSuccess {String} data.icon Link to product icon.
-    * @apiSuccess {Object} data.locations Object of product location info.
-    * @apiSuccess {String} data.locations.country Country.
-    * @apiSuccess {String} data.locations.postcode Postcode.
-    * @apiSuccess {String} data.locations.state State.
-    * @apiSuccess {String} data.locations.street1 Street 1.
-    * @apiSuccess {String} data.locations.street2 Street 2.
-    * @apiSuccess {String} data.locations.suburb Suburb.
-    * @apiSuccess {Number[]} data.locations.geo Array of longitude and latitude infos.
-    * @apiSuccess {String} data.locations.name Location name.
-    * @apiSuccess {Number} data.locations.number Number.
     *
     * @apiUse ResponseError
     */
-    app.get('/api/public/v0/store/products', routes.views.api.products);
+    app.get('/api/public/v0/store/skills', routes.views.api.products);
 
     app.get('/files/:file', routes.views.api.images);
 
