@@ -1,1 +1,1 @@
-define({  "name": "Butler Hero API",  "version": "1.0.0",  "description": "",  "sampleUrl": false,  "apidoc": "0.2.0",  "generator": {    "name": "apidoc",    "time": "2017-03-02T17:20:17.675Z",    "url": "http://apidocjs.com",    "version": "0.16.1"  }});
+define({  "name": "Butler Hero API",  "version": "1.0.0",  "description": "",  "sampleUrl": false,  "apidoc": "0.2.0",  "generator": {    "name": "apidoc",    "time": "2017-05-11T06:31:56.719Z",    "url": "http://apidocjs.com",    "version": "0.16.1"  }});

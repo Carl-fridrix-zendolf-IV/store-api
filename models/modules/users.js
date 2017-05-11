@@ -16,8 +16,8 @@ User.add({
     phone: { type: String, required: true, index: {unique: true}, initial: true },
     email: { type: Types.Email, initial: false, required: false },
     // avatar: { type: Types} // ????
-    grades: {type: Types.Relationship, ref: 'Grades', many: true, dependsOn: { professional: true } },
-    languages: {type: Types.Relationship, ref: 'Languages', many: true, dependsOn: { professional: true } },
+    // grades: {type: Types.Relationship, ref: 'Grades', many: true, dependsOn: { professional: true } },
+    // languages: {type: Types.Relationship, ref: 'Languages', many: true, dependsOn: { professional: true } },
     rating: { type: Types.Number, default: 0},
     password: { type: Types.Password, required: true, initial: true },
     passCode: { type: String, hidden: true },

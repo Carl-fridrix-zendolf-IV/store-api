@@ -614,4 +614,39 @@ exports = module.exports = (app) => {
     * @apiUse ResponseError
     */
     app.patch('/api/public/v0/orders/route/:order_id', routes.views.api.routeChange);
+
+    /**
+     * @api {get} /api/public/v0/services/grades Get grades list
+     * @apiName Grades list
+     * @apiGroup Services
+     *
+     * @apiHeader {String} Authorization User authorization token.
+     *
+     * @apiUse ResponseSuccess
+     * @apiSuccess {Object[]} data Data object
+     * @apiSuccess {String} data._id Grade ID.
+     * @apiSuccess {String} data.name Grade name.
+     * @apiSuccess {Number} data.price Grader price.
+     * @apiSuccess {Number} data.index Grader index.
+     *
+     * @apiUse ResponseError
+     */
+    app.get('/api/public/v0/services/grades', routes.views.api.gradesList);
+
+    /**
+     * @api {get} /api/public/v0/services/languages Get languages list
+     * @apiName Languages list
+     * @apiGroup Services
+     *
+     * @apiHeader {String} Authorization User authorization token.
+     *
+     * @apiUse ResponseSuccess
+     * @apiSuccess {Object[]} data Data object
+     * @apiSuccess {String} data._id Grade ID.
+     * @apiSuccess {String} data.name Grade name.
+     * @apiSuccess {Number} data.index Grader index.
+     *
+     * @apiUse ResponseError
+     */
+    app.get('/api/public/v0/services/languages', routes.views.api.languagesList);
 }

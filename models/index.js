@@ -1,4 +1,3 @@
-require('./modules/users.js');
 require('./modules/categories.js');
 require('./modules/products.js');
 require('./modules/statuses.js');
@@ -7,3 +6,4 @@ require('./modules/orders.js');
 require('./modules/notifications.js');
 require('./modules/grades.js');
 require('./modules/languages.js');
+require('./modules/users.js');

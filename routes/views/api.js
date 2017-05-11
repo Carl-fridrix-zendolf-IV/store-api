@@ -13,6 +13,8 @@ const keystone = require('keystone'),
     Payments = keystone.list('Payments'), // connect to Payments model
     Status = keystone.list('Statuses'), // connect to Statuses model
     Notifications = keystone.list('Notifications'), // connect to Notifications model
+    Grades = keystone.list('Grades'),
+    Languages = keystone.list('Languages'),
 
     index = require('../index'), // get token sectret word
     http = require('http'), // for SMS request
@@ -1151,5 +1153,32 @@ exports = module.exports = {
                 return res.json({result: 'Success', message: 'Order route changed successfully'});
             }
         )
+    },
+
+    gradesList: (req, res) => {
+        Grades.model.find()
+            .select({__v: 0})
+            .then(data => {
+                return res.json({
+                    result: 'Success',
+                    message: '',
+                    data: data
+                })
+            }, err => {
+                return res.status(500).json({result: 'Error', message: err.message});
+            })
+    },
+    languagesList: (req, res) => {
+        Languages.model.find()
+            .select({__v: 0})
+            .then(data => {
+                return res.json({
+                    result: 'Success',
+                    message: '',
+                    data: data
+                })
+            }, err => {
+                return res.status(500).json({result: 'Error', message: err.message});
+            })
     }
 }
