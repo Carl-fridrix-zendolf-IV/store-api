@@ -79,6 +79,9 @@ exports.tokenAuthentication = (req, res, next) => {
         '/api/public/v0/user/restore',
         '/api/public/v0/user/generate/sms',
 
+        '/api/public/v0/services/grades',
+        '/api/public/v0/services/languages',
+
         '/api/public/v0/facebook/ios/auth',
         '/api/public/v0/facebook/ios/callback',
 
