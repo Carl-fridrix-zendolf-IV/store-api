@@ -10,7 +10,13 @@ var Order = new keystone.List('Orders', {
 Order.add({
     name: { type: String, required: true, index: true, initial: true, noedit: true },
     status: { type: Types.Relationship, ref: 'Statuses', many: false, required: true, initial: true },
-    products: { type: Types.Relationship, ref: 'Products', many: true, required: true, initial: true, noedit: true, nodelete: true},
+    // ver 2.0 update
+    products: { type: Types.Relationship, ref: 'Products', many: true, required: true, initial: true, noedit: true, nodelete: true, label: 'skills'},
+    languages: { type: Types.Relationship, ref: 'Languages', many: true },
+    grades: { type: Types.Relationship, ref: 'Grades', many: true },
+    duration: { type: Number, default: 0 },
+    linked_orders: { type: Types.Relationship, ref: 'Orders', many: true, label: 'Linked Orders' },
+
     customer_id: { type: Types.Relationship, ref: 'User', filters: { professional: false }, many: false, required: true, initial: true, label: 'Customer', noedit: true, nodelete: true},
     prof_id: { type: Types.Relationship, ref: 'User', filters: { professional: true }, many: false, label: 'Professional'},
     addr: { type: Types.Location, label: 'Address' },

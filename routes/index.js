@@ -105,16 +105,16 @@ exports = module.exports = (app) => {
 
     app.get('/keystone/users', (req, res) => {
         console.log('******* request to "/keystone/users"')
-    })
+    });
 
     app.get('/chat/detail', (req, res) => {
         let obj = {name: 'Support', id: '123456789', avatarURL: '', roomID: req.query.room.toString()}
 
         res.cookie('cookie_logininfo', JSON.stringify(obj));
         res.redirect(302, 'https://butler-hero.org/spika/#main');
-    })
+    });
 
-    app.get('/chats', routes.views.chats.chatslist)
+    app.get('/chats', routes.views.chats.chatslist);
 
     /**
     * @api {post} /api/public/v0/user/auth Request User authentication
@@ -168,7 +168,7 @@ exports = module.exports = (app) => {
     *
     * @apiUse ResponseError
     */
-    app.post('/api/public/v0/facebook/registration', routes.views.api.facebookRegistration)
+    app.post('/api/public/v0/facebook/registration', routes.views.api.facebookRegistration);
 
     /**
     * @api {post} /api/public/v0/user/registration Request for new user registration
@@ -182,6 +182,9 @@ exports = module.exports = (app) => {
     * @apiParam {String} email User email.
     * @apiParam {String} password User password.
     * @apiParam {Boolean} professional User password.
+    * @apiParam {String[]} languages List languages id's
+    * @apiParam {String[]} skills List of user skills (id's)
+    * @apiParam {Object} avatar avatar image file
     *
     * @apiUse ResponseSuccess
     * @apiSuccess {Object} data Data object
@@ -219,7 +222,7 @@ exports = module.exports = (app) => {
     *
     * @apiUse ResponseError
     */
-    app.post('/api/public/v0/user/generate/sms', routes.views.api.generateSMS)
+    app.post('/api/public/v0/user/generate/sms', routes.views.api.generateSMS);
 
     /**
     * @api {post} /api/public/v0/user/phone/verify Request for user phone verification
@@ -353,7 +356,9 @@ exports = module.exports = (app) => {
     *
     * @apiUse ResponseError
     */
-    app.post('/api/public/v0/user/location', routes.views.api.setLocation)
+    app.post('/api/public/v0/user/location', routes.views.api.setLocation);
+
+    app.patch('/api/public/v0/user/avatar', routes.views.api.uploadAvatar);
 
     /**
     * @api {get} /api/public/v0/store/categories Get categories list [DEPRECATED]
@@ -587,7 +592,7 @@ exports = module.exports = (app) => {
     *
     * @apiUse ResponseError
     */
-    app.patch('/api/public/v0/orders/status/:order_id/:status', routes.views.api.changeStatus)
+    app.patch('/api/public/v0/orders/status/:order_id/:status', routes.views.api.changeStatus);
 
     /**
     * @api {patch} /api/public/v0/orders/route/:order_id Change order route
@@ -633,4 +638,4 @@ exports = module.exports = (app) => {
      * @apiUse ResponseError
      */
     app.get('/api/public/v0/services/languages', routes.views.api.languagesList);
-}
+};

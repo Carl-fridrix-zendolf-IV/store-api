@@ -5,6 +5,8 @@ const keystone = require('keystone'),
     path = require("path"),
     temp_dir = path.join('../temp/'),
     https = require('https'),
+    multer  = require('multer'),
+    fs = require('fs'),
 
     User = keystone.list('User'), // connect to User model
     Category = keystone.list('Categories'), // connect to Categories model
@@ -298,8 +300,19 @@ exports = module.exports = {
             })
     },
     registration: (req, res) => {
+        let avatar = null;
+
         if (req.body.phone.indexOf('+') < 0)
             req.body.phone = '+' + req.body.phone;
+
+        if (req.files) {
+            fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
+            avatar = {
+                filename: req.files.avatar.name,
+                size: req.files.size,
+                mimetype: req.files.mimetype
+            };
+        }
 
         let newUser = new User.model({
             name: req.body.name,
@@ -312,7 +325,10 @@ exports = module.exports = {
             phone_verified: false,
             user_active: true,
             canAccessKeystone: false,
-            addrs: new Array()
+            addrs: new Array(),
+            skills: req.body.skills,
+            languages: req.body.languages,
+            avatar: avatar
         });
 
         newUser.save((err, user) => {
@@ -330,6 +346,18 @@ exports = module.exports = {
                 }
             });
         });
+    },
+    uploadAvatar: (req, res) => {
+        fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
+
+        User.model.update({_id: mongoose.Types.ObjectId(req.USER_TOKEN_DATA._id)}, {$set: {
+            filename: req.files.avatar.name,
+            size: req.files.size,
+            mimetype: req.files.mimetype
+        }}, (err, result) => {
+            console.log(err);
+            console.log(result);
+        })
     },
     restore: (req, res) => {
         if (req.body.phone.indexOf('+') < 0)
@@ -767,6 +795,15 @@ exports = module.exports = {
                 {
                     $unwind: "$products"
                 },
+                {
+                    $unwind: "$languages"
+                },
+                {
+                    $unwind: "$grades"
+                },
+                {
+                    $unwind: "$linked_orders"
+                },
 
                 // lookups
                 {
@@ -809,9 +846,42 @@ exports = module.exports = {
                         as: "productObjects"
                     }
                 },
+                {
+                    $lookup: {
+                        from: "languages",
+                        localField: "languages",
+                        foreignField: "_id",
+                        as: "language_obj"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "grades",
+                        localField: "grades",
+                        foreignField: "_id",
+                        as: "grades_obj"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "linked_orders",
+                        localField: "linked_orders",
+                        foreignField: "_id",
+                        as: "linked_orders_list"
+                    }
+                },
 
                 {
                     $unwind: "$productObjects"
+                },
+                {
+                    $unwind: "$language_obj"
+                },
+                {
+                    $unwind: "$grades_obj"
+                },
+                {
+                    $unwind: "$linked_orders_list"
                 },
 
                 // group
@@ -853,6 +923,15 @@ exports = module.exports = {
                         },
                         productObjects: {
                             $push: "$productObjects"
+                        },
+                        language_obj: {
+                            $push: "$language_obj"
+                        },
+                        grades_obj: {
+                            $push: "$grades_obj"
+                        },
+                        linked_orders_list: {
+                            $push: "$linked_orders_list"
                         }
                     }
                 }

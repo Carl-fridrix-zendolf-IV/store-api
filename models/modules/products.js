@@ -28,7 +28,7 @@ var imageStorage = new keystone.Storage({
 
 
 Product.add({
-    name: { type: String, required: true, index: true, initial: true },
+    name: { type: String, required: true, index: true, initial: true, label: 'Title' },
     description: { type: Types.Html, wysiwyg: true },
     // cat_id: { type: Types.Relationship, ref: 'Categories', label: 'Category', many: false, required: true, initial: true },
     price: { type: Types.Money, required: true, index: true, initial: true },

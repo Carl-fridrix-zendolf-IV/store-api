@@ -74,4 +74,4 @@ keystone.set( 'nav', {
 keystone.start();
 
 // import Spika
-require('./spika/src/server/main')();
+// require('./spika/src/server/main')();
