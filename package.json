@@ -19,6 +19,7 @@
     "clear-require": "^2.0.0",
     "connect": "^3.4.0",
     "connect-busboy": "0.0.2",
+    "cors": "^2.8.3",
     "easyimage": "2.0.3",
     "express": "latest",
     "express-validator": "^3.2.0",

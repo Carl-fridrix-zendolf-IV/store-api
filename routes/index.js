@@ -1,5 +1,6 @@
 const keystone = require('keystone'),
     middleware = require('./middleware'),
+    cors = require('cors'),
     importRoutes = keystone.importer(__dirname);
 
 
@@ -102,6 +103,8 @@ exports = module.exports = (app) => {
     */
 
     // ************ API ROUTING CODE STARTS HERE ******************
+    app.use(cors());
+
     app.get('/', (req, res) => {
         return res.json({result: 'Success', message: 'Welcome to awesome butler hero API'})
     });
