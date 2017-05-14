@@ -2,6 +2,7 @@ var _ = require('underscore'),
     keystone = require('keystone'),
     jwt = require('jsonwebtoken'), // for token generation
     index = require('./index'), // get token sectret word;
+    expressValidator = require('express-validator'),
 
     User = keystone.list('User'); // connect to User model
 
@@ -87,7 +88,7 @@ exports.tokenAuthentication = (req, res, next) => {
 
         '/api/public/v0/facebook/auth',
         '/api/public/v0/facebook/registration'
-    ]
+    ];
 
 
     if (req.path.indexOf('/files/') > -1)
@@ -118,4 +119,8 @@ exports.tokenAuthentication = (req, res, next) => {
             return res.status(500).json({result: 'Error', message: err.message});
         })
     })
-}
+};
+
+exports.expressValidator = (req, res, next) => {
+
+};
