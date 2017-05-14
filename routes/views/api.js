@@ -1178,10 +1178,6 @@ exports = module.exports = {
         };
 
         this.saveOrder = () => {
-            console.log('Save order');
-
-            console.log(this.orders.length, req.body.quantity);
-
             if (this.orders.length !== req.body.quantity)
                 return;
 
@@ -1195,11 +1191,10 @@ exports = module.exports = {
                     this.ids.push(mongoose.Types.ObjectId(order._id));
 
                     if (this.ids.length === this.orders.length) {
-                        res.json({result: 'Success', message: 'Order created successfull'});
+                        res.json({result: 'Success', message: 'Order created successfull', data: this.ids});
 
-                        Order.model.updateMany({_id: { $in: this.ids }}, {linked_orders: this.orders}).then((err, result) => {
+                        Order.model.update({_id: { $in: this.ids }}, {linked_orders: this.orders}, {multi: true}).then((err, result) => {
                             if (err) return console.log(err);
-                            console.log(result);
                         })
                     }
                 })
