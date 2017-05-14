@@ -505,7 +505,7 @@ exports = module.exports = {
                     avatar: {$first: "$avatar"},
                     skills: { $push: "$skills_obj" },
                     languages: { $push: "$languages_obj" },
-                    grades: { $push: "$grades_obj" }
+                    grades: { $first: "$grades_obj" }
                 }
             }
         ]).exec((err, result) => {
@@ -519,6 +519,8 @@ exports = module.exports = {
         })
     },
     userProfileUpdate: (req, res) => {
+        // TODO: update user update!!!
+
         let userID = req.params.id;
 
         User.model.findOne({_id: userID})

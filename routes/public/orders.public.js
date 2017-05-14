@@ -49,7 +49,6 @@ module.exports = (app, routes) => {
      *
      * @apiUse ResponseError
      */
-
     /**
      * @api {get} /api/public/v0/orders/active Get active orders
      * @apiName Active orders
@@ -66,7 +65,6 @@ module.exports = (app, routes) => {
      *
      * @apiUse ResponseError
      */
-
     /**
      * @api {get} /api/public/v0/orders/pending Get pending orders
      * @apiName Pending orders

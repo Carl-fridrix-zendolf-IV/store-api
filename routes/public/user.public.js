@@ -135,7 +135,7 @@ module.exports = (app, routes) => {
      * @apiSuccess {String} data.languages._id Language id
      * @apiSuccess {Number} data.languages.index Language index
      * @apiSuccess {String} data.languages.name Language name
-     * @apiSuccess {Object[]} data.grades Grades list
+     * @apiSuccess {Object} data.grades Grade info
      * @apiSuccess {String} data.grades._id Grade id
      * @apiSuccess {Number} data.grades.index Grade index
      * @apiSuccess {String} data.grades.name Grade name

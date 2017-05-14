@@ -29,7 +29,7 @@ User.add({
     // ver 2.0 update
     avatar: { type: Types.File, storage: avatarStorage },
     rating: { type: Types.Number, default: 0, noedit: true },
-    grades: { type: Types.Relationship, ref: 'Grades', many: true, dependsOn: { professional: true } },
+    grades: { type: Types.Relationship, ref: 'Grades', many: false, dependsOn: { professional: true } },
     languages: { type: Types.Relationship, ref: 'Languages', many: true, dependsOn: { professional: true } },
     skills: { type: Types.Relationship, ref: 'Products', many: true, dependsOn: { professional: true } },
 
