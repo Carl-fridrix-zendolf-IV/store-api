@@ -124,7 +124,7 @@ module.exports = (app, routes) => {
      * @apiParam {Number{1..}} quantity Number of copy orders
      *
      * @apiUse ResponseSuccess
-     * @apiSuccess {Number[]} data List of created orders
+     * @apiSuccess {String[]} data List of created orders
      *
      * @apiUse ResponseError
      */
