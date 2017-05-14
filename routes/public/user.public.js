@@ -105,8 +105,45 @@ module.exports = (app, routes) => {
      * @apiSuccess {Object} data.name Name object
      * @apiSuccess {String} data.name.first User firstname.
      * @apiSuccess {String} data.name.last User lastname.
+     * @apiSuccess {Object[]} data.addrs User addresses list
+     * @apiSuccess {String} data.addrs.country Country.
+     * @apiSuccess {Number[]} data.addrs.geo Delivery longitude and latitude.
+     * @apiSuccess {String} data.addrs.name Building Name.
+     * @apiSuccess {String} data.addrs.number PO Box / Shop
+     * @apiSuccess {String} data.addrs.postcode Postcode
+     * @apiSuccess {String} data.addrs.state State
+     * @apiSuccess {String} data.addrs.street1 Street Address
+     * @apiSuccess {String} data.addrs.street2 Street Address 2
+     * @apiSuccess {String} data.addrs.suburb Suburb
+     * @apiSuccess {Number[]} data.location User lat and long postion
      * @apiSuccess {Boolean} data.reviewed User reviewed property
-     * @apiSuccess {Boolean} data.canAccessKeystone User admin status
+     * @apiSuccess {Number} data.rating User rating
+     * @apiSuccess {Object} data.avatar User avatar object
+     * @apiSuccess {Object} data.avatar.filename Link to user avatar
+     * @apiSuccess {Boolean} data.reviewed User reviewed property
+     * @apiSuccess {Object[]} data.skills User skills list
+     * @apiSuccess {String} data.skills._id Skill ID
+     * @apiSuccess {Number} data.skills.price Skill price
+     * @apiSuccess {String} data.skills.name Skill name
+     * @apiSuccess {String} data.skills.description Skill description
+     * @apiSuccess {Object} data.skills.map_icon Skill map icon
+     * @apiSuccess {String} data.skills.map_icon.filename Link to map icon filename
+     * @apiSuccess {Object} data.skills.image Skill image object
+     * @apiSuccess {String} data.skills.image.filename Link to skill icon filename
+     * @apiSuccess {Object} data.skills.icon Skill icon object
+     * @apiSuccess {String} data.skills.icon.filename Skill icon filename
+     * @apiSuccess {String} data.skills.edit_at Last skill update date
+     * @apiSuccess {Boolean} data.skills.available Skill available
+     * @apiSuccess {Object[]} data.languages Languages list
+     * @apiSuccess {String} data.languages._id Language id
+     * @apiSuccess {Number} data.languages.index Language index
+     * @apiSuccess {String} data.languages.name Language name
+     * @apiSuccess {Object[]} data.grades Grades list
+     * @apiSuccess {String} data.grades._id Grade id
+     * @apiSuccess {Number} data.grades.index Grade index
+     * @apiSuccess {String} data.grades.name Grade name
+     * @apiSuccess {Object} data.avatar User avatar object
+     * @apiSuccess {String} data.avatar.filename Link to user avatar
      *
      * @apiUse ResponseError
      */

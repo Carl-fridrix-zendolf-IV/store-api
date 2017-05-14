@@ -458,7 +458,7 @@ exports = module.exports = {
 
         User.model.findOne()
             .where('_id', userID)
-            .select({password: 0, passCode: 0, user_active: 0, canAccessKeystone: 0, __v: 0})
+            .select({password: 0, passCode: 0, user_active: 0, canAccessKeystone: 0, __v: 0, push_sended: 0, facebook_id: 0})
             .then(result => {
                 if (!result)
                     return res.status(403).json({ result: "Error", message: "Undefined user ID" })

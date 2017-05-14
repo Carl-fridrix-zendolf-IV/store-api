@@ -126,6 +126,7 @@ exports = module.exports = (app) => {
     require('./public/facebook.public')(app, routes); // all methods with facebook auth
     require('./public/store.public')(app, routes); // all methods with store access
     require('./public/orders.public')(app, routes); // all methods with orders manipulations
+    require('./public/services.public')(app, routes);
 
     // Require internal modules
     require('./internal/user.internal')(app, routes);
