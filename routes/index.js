@@ -5,6 +5,7 @@ const keystone = require('keystone'),
 
 // Token secret word
 exports.SECRET_WORD = 'JL4pRcWy';
+exports.ADMIN_SECRET_WORD = 'es5NduEEVhDFJk4l';
 
 // One signal for custormers
 exports.ONE_SIGNAL_CUSTOMERS_APP_ID = '9be93636-2bde-44e3-a322-54d287d4f90c';
@@ -19,6 +20,7 @@ exports.ONE_SIGNAL_PROFESSIONALS_API_KEY = 'MmRmZTcwNmUtNGQwYy00YzhkLTkyNjQtNzE5
 keystone.pre('routes', middleware.initErrorHandlers);
 keystone.pre('routes', middleware.initLocals);
 keystone.pre('routes', middleware.tokenAuthentication);
+keystone.pre('routes', middleware.internalTokenVerification);
 
 keystone.pre('render', middleware.flashMessages);
 
@@ -41,7 +43,8 @@ keystone.set('500', (err, req, res, next) => {
 
 // Load Routes
 var routes = {
-    views: importRoutes('./views')
+    views: importRoutes('./views'),
+    services: importRoutes('./services')
 };
 
 // Bind Routes
@@ -118,9 +121,12 @@ exports = module.exports = (app) => {
 
     app.get('/files/:file', routes.views.api.images);
 
-    // Require modules
+    // Require public modules
     require('./public/user.public')(app, routes); // all methods with users
     require('./public/facebook.public')(app, routes); // all methods with facebook auth
     require('./public/store.public')(app, routes); // all methods with store access
     require('./public/orders.public')(app, routes); // all methods with orders manipulations
+
+    // Require internal modules
+    require('./internal/user.internal')(app, routes);
 };

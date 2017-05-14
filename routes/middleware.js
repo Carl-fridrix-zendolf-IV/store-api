@@ -33,16 +33,11 @@ exports.initErrorHandlers = function(req, res, next) {
             errorTitle: title,
             errorMsg: message
         });
-    }
+    };
 
     res.notfound = function(title, message) {
         res.status(404).json({result: 'Error', message: 'Not found'});
-
-        // res.status(404).render('errors/404', {
-        //     errorTitle: title,
-        //     errorMsg: message
-        // });
-    }
+    };
 
     next();
 
@@ -70,6 +65,9 @@ exports.flashMessages = function(req, res, next) {
     Force Authentication header
 */
 exports.tokenAuthentication = (req, res, next) => {
+    if (req.path.indexOf('internal') > -1)
+        return next();
+
     let freeMethods = [
         '/',
         '/keystone',
@@ -96,7 +94,7 @@ exports.tokenAuthentication = (req, res, next) => {
     if (freeMethods.indexOf(req.path) > -1)
         return next();
     else if (freeMethods.indexOf(req.path) < 0 && !req.headers.authorization) {
-        return res.status(401).json({result: 'Error', message: "Access is denied. User is unauthorized or has expired token"})
+        return res.status(401).json({result: 'Error', message: "Access is denied. User is unauthorized or has expired token"});
     }
 
     jwt.verify(req.headers.authorization, index.SECRET_WORD, (err, decoded) => {
@@ -121,6 +119,32 @@ exports.tokenAuthentication = (req, res, next) => {
     })
 };
 
-exports.expressValidator = (req, res, next) => {
+exports.internalTokenVerification = (req, res, next) => {
+    if (req.path.indexOf('public') > -1)
+        return next();
 
+    if (!req.headers.authorization) {
+        return res.status(401).json({result: 'Error', message: "Access is denied. User is unauthorized or has expired token"})
+    }
+
+    jwt.verify(req.headers.authorization, index.ADMIN_SECRET_WORD, (err, decoded) => {
+        if (err)
+            return res.status(401).json({result: 'Error', message: 'Invalid token'});
+
+        User.model.findOne({_id: decoded._id}).then(data => {
+            if (!data) {
+                return res.status(401).json({result: 'Error', message: 'Undefined user'});
+            }
+            else if (!data.canAccessKeystone) {
+                return res.json(401).json({result: 'Error', message: `User with login ${data.email} haven't got an access to Admin UI`});
+            }
+            else {
+                req.USER_TOKEN_DATA = decoded;
+            }
+
+            next();
+        }, err => {
+            return res.status(500).json({result: 'Error', message: err.message});
+        })
+    })
 };

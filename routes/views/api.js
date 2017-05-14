@@ -61,7 +61,7 @@ var generateToken = (phone, id, professional) => {
     }, index.SECRET_WORD, {expiresIn: '30 days'});
 
     return token;
-}
+};
 var createPush = (user_id, receiver, notify_id, order_id) => {
     let api_key;
     let app_id;
@@ -129,7 +129,7 @@ var createPush = (user_id, receiver, notify_id, order_id) => {
     }, err => {
         console.log('Create PUSH error', err.text);
     })
-}
+};
 var rewiewListener = (() => {
     let setPushSended = (id) => {
         User.model.findOne({_id: mongoose.Types.ObjectId(id)})
@@ -148,7 +148,7 @@ var rewiewListener = (() => {
             }
         }, err => { console.log(err); })
     }, 1800000);
-})()
+})();
 
 exports = module.exports = {
     facebookAuth: (req, res) => {
