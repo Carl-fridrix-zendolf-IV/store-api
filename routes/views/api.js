@@ -313,7 +313,7 @@ exports = module.exports = {
                         return res.status(403).json({result: 'Error', message: 'User with the same phone number already exist'});
                     else
                         callback();
-                })
+                })т
             },
             callback => {
                 if (req.files) {
@@ -512,7 +512,8 @@ exports = module.exports = {
             if (err)
                 return res.status(500).json({result: 'Error', message: err.message});
 
-            result[0].avatar.filename = "http://prod.butler-hero.org/files/" + result[0].avatar.filename;
+            if (result[0].avatar)
+                result[0].avatar.filename = "http://prod.butler-hero.org/files/" + result[0].avatar.filename;
 
             res.json({result: 'Success', message: '', data: result});
         })
