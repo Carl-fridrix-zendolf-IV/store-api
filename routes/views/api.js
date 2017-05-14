@@ -313,7 +313,7 @@ exports = module.exports = {
                         return res.status(403).json({result: 'Error', message: 'User with the same phone number already exist'});
                     else
                         callback();
-                })т
+                })
             },
             callback => {
                 if (req.files) {
