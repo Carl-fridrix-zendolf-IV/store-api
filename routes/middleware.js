@@ -124,7 +124,7 @@ exports.internalTokenVerification = (req, res, next) => {
         return next();
 
     if (FREE_METHODS.indexOf(req.path) > -1)
-        return next();
+        return next()
 
     if (!req.headers.authorization) {
         return res.status(401).json({result: 'Error', message: "Access is denied. User is unauthorized or has expired token"})

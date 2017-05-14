@@ -456,21 +456,49 @@ exports = module.exports = {
     userProfile: (req, res) => {
         let userID = req.params.id;
 
-        User.model.findOne()
-            .where('_id', userID)
-            .select({password: 0, passCode: 0, user_active: 0, canAccessKeystone: 0, __v: 0, push_sended: 0, facebook_id: 0})
-            .then(result => {
-                if (!result)
-                    return res.status(403).json({ result: "Error", message: "Undefined user ID" })
+        User.model.aggregate([
+            {$match: {_id: mongoose.Types.ObjectId(userID)}},
 
-                res.json({
-                    result: 'Success',
-                    message: '',
-                    data: result
-                });
-            }, err => {
-                return res.status(500).json({result: 'Error',message: err.message});
-            })
+            // unwinds
+            {$unwind: {path: "$skills", preserveNullAndEmptyArrays: true}},
+            {$unwind: {path: "$languages", preserveNullAndEmptyArrays: true}},
+            {$unwind: {path: "$grades", preserveNullAndEmptyArrays: true}},
+
+            // lookups
+            {$lookup: {from: "products", localField: "skills", foreignField: "_id", as: "skills_obj"} },
+            {$lookup: {from: 'languages', localField: 'languages', foreignField: '_id', as: 'languages_obj'}},
+            {$lookup: {from: 'grades', localField: 'grades', foreignField: '_id', as: 'grades_obj'}},
+
+            {$unwind: {path: "$skills_obj", preserveNullAndEmptyArrays: true}},
+            {$unwind: {path: "$languages_obj", preserveNullAndEmptyArrays: true}},
+            {$unwind: {path: "$grades_obj", preserveNullAndEmptyArrays: true}},
+
+            {
+                $group: {
+                    _id: "$_id",
+                    phone: { $first: "$phone" },
+                    email: { $first: "$email" },
+                    phone_verified: { $first: "$phone_verified" },
+                    professional: { $first: "$professional" },
+                    name: { $first: "$name"},
+                    addrs: { $first: "$addrs"},
+                    location: {$first: "$location"},
+                    reviewed: {$first: "$reviewed"},
+                    rating: {$first: "$rating"},
+                    avatar: {$first: "$avatar"},
+                    skills: { $push: "$skills_obj" },
+                    languages: { $push: "$languages_obj" },
+                    grades: { $push: "$grades_obj" }
+                }
+            }
+        ]).exec((err, result) => {
+            if (err)
+                return res.status(500).json({result: 'Error', message: err.message});
+
+            result[0].avatar.filename = "http://prod.butler-hero.org/files/" + result[0].avatar.filename;
+
+            res.json({result: 'Success', message: '', data: result});
+        })
     },
     userProfileUpdate: (req, res) => {
         let userID = req.params.id;

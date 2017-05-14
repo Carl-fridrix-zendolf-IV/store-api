@@ -118,9 +118,6 @@ module.exports = (app, routes) => {
      * @apiSuccess {Number[]} data.location User lat and long postion
      * @apiSuccess {Boolean} data.reviewed User reviewed property
      * @apiSuccess {Number} data.rating User rating
-     * @apiSuccess {Object} data.avatar User avatar object
-     * @apiSuccess {Object} data.avatar.filename Link to user avatar
-     * @apiSuccess {Boolean} data.reviewed User reviewed property
      * @apiSuccess {Object[]} data.skills User skills list
      * @apiSuccess {String} data.skills._id Skill ID
      * @apiSuccess {Number} data.skills.price Skill price
