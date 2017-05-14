@@ -1084,80 +1084,129 @@ exports = module.exports = {
         }
     },
     createOrder: (req, res) => {
-        let user = req.USER_TOKEN_DATA;
-        var totalPrice = 0;
 
-        if (user.professional) {
-            return res.status(400).json({
-                result: 'Error',
-                message: 'Professional can\t create order'
-            })
-        }
+        this.orders = new Array();
+        this.ids = new Array();
 
-        let productsArr = new Array();
-        for(let item of req.body.products) {
-            productsArr.push(mongoose.Types.ObjectId(item));
-        }
+        this.checkQuantity = () => {
+            if (req.body.quantity > 1)
+                this.separateOrders();
+            else
+                this.createOrder();
+        };
 
-        // Find products in storage for total price of order
-        Product.model.find({
-            _id: { $in: productsArr }
-        }, (err, docs) => {
-            for(let item of docs) {
-                totalPrice += Number(item.price);
+        this.separateOrders = () => {
+            for (let i=0; i < req.body.quantity; i++) {
+                this.createOrder();
             }
-        });
+        };
 
-        // Generate order ID
-        let generateOrderNumber = () => {
-            return (Math.random() * (999999 - 100000) + 100000).toFixed();
-        }
+        this.createOrder = () => {
+            let user = req.USER_TOKEN_DATA;
+            var totalPrice = 0;
 
-        // Create order model
-        let newOrder = new Order.model({
-            name: generateOrderNumber(),
-            status: mongoose.Types.ObjectId(req.body.status),
-            products: productsArr,
-            customer_id: mongoose.Types.ObjectId(req.body.customer_id),
-            addr: req.body.addr,
-            payment_type: mongoose.Types.ObjectId(req.body.payment_type),
-            note: req.body.note,
-            summary: null
-        })
+            if (user.professional) {
+                return res.status(400).json({
+                    result: 'Error',
+                    message: 'Professional can\t create order'
+                })
+            }
 
-        // Find status id for dafault status
-        // TODO: set default status active in Orders model for Admin UI
-        Status.model.find()
-            .then(data => {
-                for(let item of data) {
-                    if (item.number === 1) {
+            let skillsArr = req.body.skills.map(item => {
+                return mongoose.Types.ObjectId(item);
+            });
 
-                        newOrder.status = mongoose.Types.ObjectId(item._id);
-                        newOrder.summary = totalPrice;
+            let languagesArr = req.body.languages.map(item => {
+                return mongoose.Types.ObjectId(item);
+            });
 
-                        saveOrder();
+            let gradesArr = req.body.grades.map(item => {
+                return mongoose.Types.ObjectId(item);
+            });
 
-                        break;
-                    }
+            // Find products in storage for total price of order
+            Product.model.find({
+                _id: {$in: skillsArr}
+            }, (err, docs) => {
+                for (let item of docs) {
+                    totalPrice += Number(item.price);
                 }
+            });
 
-            }, err => { res.status(500).json({result: 'Error', message: err.message}); })
+            // Generate order ID
+            let generateOrderNumber = () => {
+                return (Math.random() * (999999 - 100000) + 100000).toFixed();
+            };
 
-        // Create order
-        var saveOrder = () => {
-            newOrder.save((err, order) => {
-                if (err)
-                    return res.status(500).json({result: 'Error', message: err.message})
+            // Create order model
+            let newOrder = new Order.model({
+                name: generateOrderNumber(),
+                status: mongoose.Types.ObjectId(req.body.status),
 
-                res.json({
-                    result: 'Success',
-                    message: 'Order created successfull',
-                    data: {
-                        _id: order._id
+                products: skillsArr,
+                languages: languagesArr,
+                grades: gradesArr,
+                duration: Number(req.body.duration),
+
+                customer_id: mongoose.Types.ObjectId(user._id),
+                addr: req.body.addr,
+                payment_type: mongoose.Types.ObjectId(req.body.payment_type),
+                note: req.body.note,
+                summary: null
+            });
+
+            // Find status id for dafault status
+            // TODO: set default status active in Orders model for Admin UI
+            Status.model.find()
+                .then(data => {
+                    for (let item of data) {
+                        if (item.number === 1) {
+
+                            newOrder.status = mongoose.Types.ObjectId(item._id);
+                            newOrder.summary = totalPrice;
+
+                            break;
+                        }
+                    }
+
+                    this.orders.push(newOrder);
+                    this.saveOrder();
+                }, err => {
+                    res.status(500).json({result: 'Error', message: err.message});
+                })
+
+        };
+
+        this.saveOrder = () => {
+            console.log('Save order');
+
+            console.log(this.orders.length, req.body.quantity);
+
+            if (this.orders.length !== req.body.quantity)
+                return;
+
+            for(let item of this.orders) {
+                item.save((err, order) => {
+                    if (err) {
+                        res.status(500).json({result: 'Error', message: err.message});
+                        return;
+                    }
+
+                    this.ids.push(mongoose.Types.ObjectId(order._id));
+
+                    if (this.ids.length === this.orders.length) {
+                        res.json({result: 'Success', message: 'Order created successfull'});
+
+                        Order.model.updateMany({_id: { $in: this.ids }}, {linked_orders: this.orders}).then((err, result) => {
+                            if (err) return console.log(err);
+                            console.log(result);
+                        })
                     }
                 })
-            })
-        }
+            }
+        };
+
+        this.checkQuantity();
     },
     changeStatus: (req, res) => {
         let user = req.USER_TOKEN_DATA;
@@ -1306,4 +1355,4 @@ exports = module.exports = {
                 return res.status(500).json({result: 'Error', message: err.message});
             })
     }
-}
+};

@@ -105,8 +105,7 @@ module.exports = (app, routes) => {
      *
      * @apiHeader {String} Authorization User authorization token.
      *
-     * @apiParam {String[]} products List of product ids.
-     * @apiParam {String} customer_id Customer ID.
+     * @apiParam {String[]} skills List of skill ids.
      * @apiParam {Object} addr Delivery address.
      * @apiParam {String} addr.country Country.
      * @apiParam {Number[]} addr.geo Delivery longitude and latitude.
@@ -119,6 +118,10 @@ module.exports = (app, routes) => {
      * @apiParam {String} addr.suburb Suburb
      * @apiParam {String} payment_type Payment type ID
      * @apiParam {String} note Order note
+     * @apiParam {String[]} languages List of language id's
+     * @apiParam {String[]} grades List of grade id's
+     * @apiParam {Number} duration Order duration
+     * @apiParam {Number{1..}} quantity Number of copy orders
      *
      * @apiUse ResponseSuccess
      * @apiSuccess {Object} data Data object
