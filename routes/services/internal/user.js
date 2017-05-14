@@ -63,9 +63,14 @@ module.exports ={
 
     list: (req, res) => {
         User.model.find({user_active: true})
-            .select({__v: 0, password: 0})
-            .skip(req.query.skip || 0)
-            .limit(req.query.limit || 0)
+            .select({
+                password: 0,
+                passCode: 0,
+                user_active: 0,
+                __v: 0
+            })
+            .skip(Number(req.query.skip) || 0)
+            .limit(Number(req.query.limit) || 0)
             .then(result => {
                 return res.json({
                     result: 'Success',

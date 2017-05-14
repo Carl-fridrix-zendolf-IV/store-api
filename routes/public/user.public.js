@@ -106,6 +106,7 @@ module.exports = (app, routes) => {
      * @apiSuccess {String} data.name.first User firstname.
      * @apiSuccess {String} data.name.last User lastname.
      * @apiSuccess {Boolean} data.reviewed User reviewed property
+     * @apiSuccess {Boolean} data.canAccessKeystone User admin status
      *
      * @apiUse ResponseError
      */
