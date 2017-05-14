@@ -20,7 +20,7 @@ module.exports = (app, routes) => {
     app.post('/api/public/v0/user/auth', routes.views.api.authentication);
 
     /**
-     * @api {post} /api/public/v0/user/registration Request for new user registration
+     * @api {post} /api/public/v0/user/registration Create new user
      * @apiName User registration
      * @apiGroup Common
      *
@@ -33,7 +33,7 @@ module.exports = (app, routes) => {
      * @apiParam {Boolean} professional User password.
      * @apiParam {String[]} languages List languages id's
      * @apiParam {String[]} skills List of user skills (id's)
-     * @apiParam {Object} avatar avatar image file
+     * @apiParam {File} avatar avatar image file
      *
      * @apiUse ResponseSuccess
      * @apiSuccess {Object} data Data object

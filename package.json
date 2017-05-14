@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "JSON2": "latest",
-    "async": "1.4.0",
+    "async": "^1.4.0",
     "backbone": "latest",
     "body-parser": "^1.13.1",
     "bootstrap-sass": "^3.3.5",

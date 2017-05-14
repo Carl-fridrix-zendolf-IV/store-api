@@ -7,6 +7,7 @@ const keystone = require('keystone'),
     https = require('https'),
     multer  = require('multer'),
     fs = require('fs'),
+    async = require('async'),
 
     User = keystone.list('User'), // connect to User model
     Category = keystone.list('Categories'), // connect to Categories model
@@ -305,47 +306,63 @@ exports = module.exports = {
         if (req.body.phone.indexOf('+') < 0)
             req.body.phone = '+' + req.body.phone;
 
-        if (req.files) {
-            fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
-            avatar = {
-                filename: req.files.avatar.name,
-                size: req.files.size,
-                mimetype: req.files.mimetype
-            };
-        }
-
-        let newUser = new User.model({
-            name: req.body.name,
-            phone: req.body.phone,
-            email: req.body.email,
-            password: req.body.password,
-            facebook_id: null,
-            passCode: null,
-            professional: req.body.professional,
-            phone_verified: false,
-            user_active: true,
-            canAccessKeystone: false,
-            addrs: new Array(),
-            skills: req.body.skills,
-            languages: req.body.languages,
-            avatar: avatar
-        });
-
-        newUser.save((err, user) => {
-            if (err)
-                return res.status(403).json({result: 'Error', message: 'User with this phone number already exist'});
-
-            let token = generateToken(user.phone, user._id, user.professional);
-
-            return res.json({
-                result: 'Success',
-                message: "",
-                data: {
-                    _id: user._id,
-                    'auth-token': token
+        async.series([
+            callback => {
+                User.model.findOne({phone: req.body.phone}).then(doc => {
+                    if (doc)
+                        return res.status(403).json({result: 'Error', message: 'User with the same phone number already exist'});
+                    else
+                        callback();
+                })
+            },
+            callback => {
+                if (req.files) {
+                    fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
+                    avatar = {
+                        filename: req.files.avatar.name,
+                        size: req.files.size,
+                        mimetype: req.files.mimetype
+                    };
                 }
-            });
-        });
+
+                let newUser = new User.model({
+                    name: req.body.name,
+                    phone: req.body.phone,
+                    email: req.body.email,
+                    password: req.body.password,
+                    facebook_id: null,
+                    passCode: null,
+                    professional: req.body.professional,
+                    phone_verified: false,
+                    user_active: true,
+                    canAccessKeystone: false,
+                    addrs: new Array(),
+                    skills: req.body.skills,
+                    languages: req.body.languages,
+                    avatar: avatar
+                });
+
+                newUser.save((err, user) => {
+                    if (err) {
+                        res.status(500).json({result: 'Error', message: err.message});
+                        return callback();
+                    }
+
+                    let token = generateToken(user.phone, user._id, user.professional);
+
+                    res.json({
+                        result: 'Success',
+                        message: "",
+                        data: {
+                            _id: user._id,
+                            'auth-token': token
+                        }
+                    });
+
+                    return callback();
+                });
+            }
+        ]);
     },
     uploadAvatar: (req, res) => {
         fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));

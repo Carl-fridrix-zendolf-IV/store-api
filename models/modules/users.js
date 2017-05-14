@@ -23,7 +23,7 @@ var avatarStorage = new keystone.Storage({
 // TODO: Add avatar, grade relation and language relation (only for proff) multiple select
 User.add({
     name: { type: Types.Name, required: true, index: true, initial: true },
-    phone: { type: String, required: true, index: true, initial: true, unique: true },
+    phone: { type: String, required: true, index: true, unique: true, initial: true },
     email: { type: Types.Email, initial: false, required: false },
 
     // ver 2.0 update
