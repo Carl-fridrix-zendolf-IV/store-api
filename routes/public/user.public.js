@@ -88,6 +88,39 @@ module.exports = (app, routes) => {
     app.post('/api/public/v0/user/phone/verify', routes.views.api.phoneVerify);
 
     /**
+     * @api {patch} /api/public/v0/user/avatar Upload user avatar
+     * @apiDescription This method use multipart/form-data for file upload. If avatar param is empty, backend will delete user avatar
+     * @apiName Upload avatar
+     * @apiGroup Common
+     *
+     * @apiHeader {String} Authorization User authorization token.
+     * @apiParam {File} avatar User avatar image
+     *
+     * @apiUse ResponseSuccess
+     * @apiSuccess {Object} data Data object
+     * @apiSuccess {String} data.filename Uploaded file filename.
+     * @apiSuccess {Number} data.size Uploaded file size.
+     * @apiSuccess {String} data.mimetype Uploaded file mimetype.
+     *
+     * @apiUse ResponseError
+     */
+    app.patch('/api/public/v0/user/avatar', routes.views.api.uploadAvatar);
+
+    /**
+     * @api {post} /api/public/v0/user/location Add user location
+     * @apiName User location
+     * @apiGroup Common
+     *
+     * @apiHeader {String} Authorization User authorization token.
+     * @apiParam {Number[]} location Longitude and latitude.
+     *
+     * @apiUse ResponseSuccess
+     *
+     * @apiUse ResponseError
+     */
+    app.post('/api/public/v0/user/location', routes.views.api.setLocation);
+
+    /**
      * @api {get} /api/public/v0/user/:id Request for user profile
      * @apiName User profile
      * @apiGroup Common
@@ -227,32 +260,4 @@ module.exports = (app, routes) => {
      * @apiUse ResponseError
      */
     app.delete('/api/public/v0/user/:id/address/:addr_id', routes.views.api.deleteAddress);
-
-    /**
-     * @api {post} /api/public/v0/user/location Add user location
-     * @apiName User location
-     * @apiGroup Common
-     *
-     * @apiHeader {String} Authorization User authorization token.
-     * @apiParam {Number[]} location Longitude and latitude.
-     *
-     * @apiUse ResponseSuccess
-     *
-     * @apiUse ResponseError
-     */
-    app.post('/api/public/v0/user/location', routes.views.api.setLocation);
-
-    /**
-     * @api {patch} /api/public/v0/user/avatar Upload user avatar
-     * @apiName Upload avatar
-     * @apiGroup Common
-     *
-     * @apiHeader {String} Authorization User authorization token.
-     * @apiParam {File} file User avatar image
-     *
-     * @apiUse ResponseSuccess
-     *
-     * @apiUse ResponseError
-     */
-    app.patch('/api/public/v0/user/avatar', routes.views.api.uploadAvatar);
 };

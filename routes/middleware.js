@@ -11,6 +11,7 @@ const FREE_METHODS = [
     '/keystone',
     '/chats',
     '/chat/detail',
+    '/files/',
     '/api/public/v0/user/auth',
     '/api/public/v0/user/registration',
     '/api/public/v0/user/restore',
@@ -24,8 +25,7 @@ const FREE_METHODS = [
 
     '/api/public/v0/facebook/auth',
     '/api/public/v0/facebook/registration',
-    '/api/internal/v1/user/auth',
-    '/api/public/v0/user/avatar'
+    '/api/internal/v1/user/auth'
 ];
 /**
     Initialises the standard view locals.
@@ -89,9 +89,9 @@ exports.tokenAuthentication = (req, res, next) => {
     if (req.path.indexOf('internal') > -1)
         return next();
 
-
     if (req.path.indexOf('/files/') > -1)
         return next();
+
     if (FREE_METHODS.indexOf(req.path) > -1)
         return next();
     else if (FREE_METHODS.indexOf(req.path) < 0 && !req.headers.authorization) {
@@ -122,6 +122,9 @@ exports.tokenAuthentication = (req, res, next) => {
 
 exports.internalTokenVerification = (req, res, next) => {
     if (req.path.indexOf('public') > -1)
+        return next();
+
+    if (req.path.indexOf('/files/') > -1)
         return next();
 
     if (FREE_METHODS.indexOf(req.path) > -1)

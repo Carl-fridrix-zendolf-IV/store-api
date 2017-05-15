@@ -6,6 +6,7 @@ const keystone = require('keystone'),
     temp_dir = path.join('../temp/'),
     https = require('https'),
     multer  = require('multer'),
+    upload = multer({dest: './'}),
     fs = require('fs'),
     async = require('async'),
 
@@ -301,8 +302,6 @@ exports = module.exports = {
             })
     },
     registration: (req, res) => {
-        let avatar = null;
-
         if (req.body.phone.indexOf('+') < 0)
             req.body.phone = '+' + req.body.phone;
 
@@ -316,15 +315,6 @@ exports = module.exports = {
                 })
             },
             callback => {
-                // if (req.files) {
-                //     fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
-                //     avatar = {
-                //         filename: req.files.avatar.name,
-                //         size: req.files.size,
-                //         mimetype: req.files.mimetype
-                //     };
-                // }
-
                 let newUser = new User.model({
                     name: req.body.name,
                     phone: req.body.phone,
@@ -338,8 +328,7 @@ exports = module.exports = {
                     canAccessKeystone: false,
                     addrs: new Array(),
                     skills: req.body.skills,
-                    languages: req.body.languages,
-                    avatar: avatar
+                    languages: req.body.languages
                 });
 
                 newUser.save((err, user) => {
@@ -365,36 +354,23 @@ exports = module.exports = {
         ]);
     },
     uploadAvatar: (req, res) => {
+        let avatar = null;
 
-        // console.log(req.files, '<--', 'upload file');
+        if (req.files.avatar) {
+            fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
+            avatar = {
+                filename: req.files.avatar.name,
+                size: req.files.avatar.size,
+                mimetype: req.files.avatar.mimetype
+            };
+        }
 
-        // return res.json({result: 'Success', message: ''});
+        User.model.update({_id: mongoose.Types.ObjectId(req.USER_TOKEN_DATA._id)}, {$set: {avatar: avatar}}, (err, result) => {
+            if (err)
+                return res.status(500).json({result: 'Error',message: err.message});
 
-        // let setUpdate = {
-        //     filename: null,
-        //     size: null,
-        //     mimetype: null
-        // };
-        //
-        // if (req.files) {
-        //     fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
-        //
-        //
-        //     avatar = {
-        //         filename: req.files.avatar.name,
-        //         size: req.files.size,
-        //         mimetype: req.files.mimetype
-        //     };
-        // }
-
-        // User.model.update({_id: mongoose.Types.ObjectId(req.USER_TOKEN_DATA._id)}, {$set: {
-        //     filename: req.files.avatar.name,
-        //     size: req.files.size,
-        //     mimetype: req.files.mimetype
-        // }}, (err, result) => {
-        //     console.log(err);
-        //     console.log(result);
-        // })
+            return res.json({result: 'Success', message: 'User avatar updated successfully', data: avatar});
+        })
     },
     restore: (req, res) => {
         if (req.body.phone.indexOf('+') < 0)
@@ -535,7 +511,7 @@ exports = module.exports = {
             if (result[0].avatar)
                 result[0].avatar.filename = "http://prod.butler-hero.org/files/" + result[0].avatar.filename;
 
-            res.json({result: 'Success', message: '', data: result});
+            res.json({result: 'Success', message: '', data: result[0]});
         })
     },
     userProfileUpdate: (req, res) => {
