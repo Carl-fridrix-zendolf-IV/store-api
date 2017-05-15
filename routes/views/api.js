@@ -316,14 +316,14 @@ exports = module.exports = {
                 })
             },
             callback => {
-                if (req.files) {
-                    fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
-                    avatar = {
-                        filename: req.files.avatar.name,
-                        size: req.files.size,
-                        mimetype: req.files.mimetype
-                    };
-                }
+                // if (req.files) {
+                //     fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
+                //     avatar = {
+                //         filename: req.files.avatar.name,
+                //         size: req.files.size,
+                //         mimetype: req.files.mimetype
+                //     };
+                // }
 
                 let newUser = new User.model({
                     name: req.body.name,
@@ -365,16 +365,36 @@ exports = module.exports = {
         ]);
     },
     uploadAvatar: (req, res) => {
-        fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
 
-        User.model.update({_id: mongoose.Types.ObjectId(req.USER_TOKEN_DATA._id)}, {$set: {
-            filename: req.files.avatar.name,
-            size: req.files.size,
-            mimetype: req.files.mimetype
-        }}, (err, result) => {
-            console.log(err);
-            console.log(result);
-        })
+        // console.log(req.files, '<--', 'upload file');
+
+        // return res.json({result: 'Success', message: ''});
+
+        // let setUpdate = {
+        //     filename: null,
+        //     size: null,
+        //     mimetype: null
+        // };
+        //
+        // if (req.files) {
+        //     fs.createReadStream(req.files.avatar.path).pipe(fs.createWriteStream(__dirname + '/../../../temp/' + req.files.avatar.name));
+        //
+        //
+        //     avatar = {
+        //         filename: req.files.avatar.name,
+        //         size: req.files.size,
+        //         mimetype: req.files.mimetype
+        //     };
+        // }
+
+        // User.model.update({_id: mongoose.Types.ObjectId(req.USER_TOKEN_DATA._id)}, {$set: {
+        //     filename: req.files.avatar.name,
+        //     size: req.files.size,
+        //     mimetype: req.files.mimetype
+        // }}, (err, result) => {
+        //     console.log(err);
+        //     console.log(result);
+        // })
     },
     restore: (req, res) => {
         if (req.body.phone.indexOf('+') < 0)
@@ -812,175 +832,63 @@ exports = module.exports = {
         let user = req.USER_TOKEN_DATA;
         let getData = (findProperties) => {
             Order.model.aggregate([
-                {
-                    $match: findProperties
-                },
+                {$match: findProperties},
 
                 // for custom pagination
-                {
-                    $skip: Number(req.query.skip) || 0
-                },
-                {
-                    $limit: Number(req.query.limit) || 999999
-                },
+                {$skip: Number(req.query.skip) || 0},
+                {$limit: Number(req.query.limit) || 999999},
 
                 // unwinds
-                {
-                    $unwind: "$status",
-                },
-                {
-                    $unwind: "$payment_type"
-                },
-                {
-                    $unwind: "$customer_id"
-                },
-                {
-                    $unwind: {
-                        path: "$prof_id",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $unwind: "$products"
-                },
-                {
-                    $unwind: "$languages"
-                },
-                {
-                    $unwind: "$grades"
-                },
-                {
-                    $unwind: "$linked_orders"
-                },
+                {$unwind: "$status"},
+                {$lookup: {from: "statuses", localField: "status", foreignField: "_id", as: "status_obj"}},
+                {$unwind: {path: "$status_obj", preserveNullAndEmptyArrays: true}},
 
-                // lookups
-                {
-                    $lookup: {
-                        from: "statuses",
-                        localField: "status",
-                        foreignField: "_id",
-                        as: "status_obj"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "payments",
-                        localField: "payment_type",
-                        foreignField: "_id",
-                        as: "payment_type_obj"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "users",
-                        localField: "customer_id",
-                        foreignField: "_id",
-                        as: "customer_obj"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "users",
-                        localField: "prof_id",
-                        foreignField: "_id",
-                        as: "prof_obj"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "products",
-                        localField: "products",
-                        foreignField: "_id",
-                        as: "productObjects"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "languages",
-                        localField: "languages",
-                        foreignField: "_id",
-                        as: "language_obj"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "grades",
-                        localField: "grades",
-                        foreignField: "_id",
-                        as: "grades_obj"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "linked_orders",
-                        localField: "linked_orders",
-                        foreignField: "_id",
-                        as: "linked_orders_list"
-                    }
-                },
+                {$unwind: "$payment_type"},
+                {$lookup: {from: "payments", localField: "payment_type", foreignField: "_id", as: "payment_type_obj"}},
+                {$unwind: {path: "$payment_type_obj", preserveNullAndEmptyArrays: true}},
 
-                {
-                    $unwind: "$productObjects"
-                },
-                {
-                    $unwind: "$language_obj"
-                },
-                {
-                    $unwind: "$grades_obj"
-                },
-                {
-                    $unwind: "$linked_orders_list"
-                },
+                {$unwind: "$customer_id"},
+                {$lookup: {from: "users", localField: "customer_id", foreignField: "_id", as: "customer_obj"}},
+                {$unwind: {path: "$customer_obj", preserveNullAndEmptyArrays: true}},
+
+                {$unwind: {path: "$products", preserveNullAndEmptyArrays: true}},
+                {$lookup: {from: "products", localField: "products", foreignField: "_id", as: "skillsObject"}},
+                {$unwind: {path: "$skillsObject", preserveNullAndEmptyArrays: true}},
+
+                {$unwind: "$languages"},
+                {$lookup: {from: "languages", localField: "languages", foreignField: "_id", as: "language_obj"}},
+                {$unwind: {path: "$language_obj", preserveNullAndEmptyArrays: true}},
+
+                {$unwind: {path: "$prof_id", preserveNullAndEmptyArrays: true}},
+                {$lookup: {from: "users", localField: "prof_id", foreignField: "_id", as: "prof_obj"}},
+                {$unwind: {path: "$prof_obj", preserveNullAndEmptyArrays: true}},
+
+                {$unwind: "$grades"},
+                {$lookup: {from: "grades", localField: "grades", foreignField: "_id", as: "grades_obj"}},
+                {$unwind: "$grades_obj"},
+
+                {$unwind: {path: "$linked_orders", preserveNullAndEmptyArrays: true}},
+                {$lookup: {from: "orders", localField: "linked_orders", foreignField: "_id", as: "linked_orders_list"}},
+                {$unwind: "$linked_orders_list"},
 
                 // group
                 {
                     $group: {
                         _id: "$_id",
-                        statusChangeDate: {
-                            $first: '$statusChangeDate'
-                        },
-                        route: {
-                            $first: '$route'
-                        },
-                        name: {
-                            $first: '$name'
-                        },
-                        address: {
-                            $first: '$addr'
-                        },
-                        notes: {
-                            $first: '$note'
-                        },
-                        createdAt: {
-                            $first: '$createdAt'
-                        },
-                        status_obj: {
-                            $push: "$status_obj"
-                        },
-                        payment_type_obj: {
-                            $push: "$payment_type_obj"
-                        },
-                        customer_obj: {
-                            $first: '$customer_obj'
-                        },
-                        prof_obj: {
-                            $first: '$prof_obj'
-                        },
-                        products: {
-                            $push: "$products"
-                        },
-                        productObjects: {
-                            $push: "$productObjects"
-                        },
-                        language_obj: {
-                            $push: "$language_obj"
-                        },
-                        grades_obj: {
-                            $push: "$grades_obj"
-                        },
-                        linked_orders_list: {
-                            $push: "$linked_orders_list"
-                        }
+                        statusChangeDate: {$first: '$statusChangeDate'},
+                        route: {$first: '$route'},
+                        name: {$first: '$name'},
+                        address: {$first: '$addr'},
+                        notes: {$first: '$note'},
+                        createdAt: {$first: '$createdAt'},
+                        status: {$first: "$status_obj"},
+                        payment: {$first: "$payment_type_obj"},
+                        customer: {$first: '$customer_obj'},
+                        professional: {$first: '$prof_obj'},
+                        skills: {$addToSet: "$skillsObject"},
+                        languages: {$addToSet: "$language_obj"},
+                        grades: {$addToSet: "$grades_obj"},
+                        linked_orders_list: {$addToSet: "$linked_orders_list"}
                     }
                 }
             ]).exec((err, data) => {
@@ -988,47 +896,27 @@ exports = module.exports = {
                     return res.status(500).json({result: 'Error', message: err.message});
 
                 for (let item of data) {
-                    item.products = item.productObjects;
-                    delete item.productObjects;
-
-                    for (let i of item.products) {
+                    for (let i of item.skills) {
                         i.image.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + i.image.filename;
                         i.icon.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + i.icon.filename;
                         i.map_icon.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + i.map_icon.filename;
                     }
 
-                    item.status = item.status_obj[0][0];
-                    delete item.status_obj;
-
-                    item.payment = item.payment_type_obj[0][0];
-                    delete item.payment_type_obj;
-
-                    if (item.customer_obj.length > 0) {
-                        item.customer = new Object();
-
-                        delete item.customer_obj[0].password;
-                        delete item.customer_obj[0].user_active;
-                        delete item.customer_obj[0].passCode;
-                        delete item.customer_obj[0].canAccessKeystone;
-                        delete item.customer_obj[0].__v
-
-                        item.customer = item.customer_obj[0];
-                    }
-                    delete item.customer_obj;
-
-                    if (item.prof_obj.length > 0) {
-                        item.professional = new Object();
-
-                        delete item.prof_obj[0].password;
-                        delete item.prof_obj[0].user_active;
-                        delete item.prof_obj[0].passCode;
-                        delete item.prof_obj[0].canAccessKeystone;
-                        delete item.prof_obj[0].__v
-
-                        item.professional = item.prof_obj[0];
+                    if (item.customer) {
+                        delete item.customer.password;
+                        delete item.customer.user_active;
+                        delete item.customer.passCode;
+                        delete item.customer.canAccessKeystone;
+                        delete item.customer.__v
                     }
 
-                    delete item.prof_obj;
+                    if (item.professional) {
+                        delete item.professional.password;
+                        delete item.professional.user_active;
+                        delete item.professional.passCode;
+                        delete item.professional.canAccessKeystone;
+                        delete item.professional.__v
+                    }
                 }
 
                 return res.json({
@@ -1036,8 +924,8 @@ exports = module.exports = {
                     message: '',
                     data: data
                 });
-            })
-        }
+            });
+        };
 
 
         if (req.params.id) {
@@ -1160,7 +1048,7 @@ exports = module.exports = {
             Status.model.find()
                 .then(data => {
                     for (let item of data) {
-                        if (item.number === 1) {
+                        if (item.number === 0) {
 
                             newOrder.status = mongoose.Types.ObjectId(item._id);
                             newOrder.summary = totalPrice;
@@ -1235,7 +1123,7 @@ exports = module.exports = {
         Status.model.findOne({number: statusNumber})
             .then(data => {
                 changeOrder(data._id, data.number);
-            })
+            });
 
         let changeOrder = (statusId, num) => {
 
@@ -1268,7 +1156,7 @@ exports = module.exports = {
                     findAndGeneratePush();
                     return res.json({result: 'Success', message: 'Order status changed successfully'});
                 }
-            )
+            );
 
             let findAndGeneratePush = () => {
                 Order.model.findOne({

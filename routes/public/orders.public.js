@@ -121,7 +121,7 @@ module.exports = (app, routes) => {
      * @apiParam {String[]} languages List of language id's
      * @apiParam {String[]} grades List of grade id's
      * @apiParam {Number} duration Order duration
-     * @apiParam {Number{1..}} quantity Number of copy orders
+     * @apiParam {Number{1..}} quantity Number of order copies
      *
      * @apiUse ResponseSuccess
      * @apiSuccess {String[]} data List of created orders

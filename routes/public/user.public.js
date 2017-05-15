@@ -242,6 +242,17 @@ module.exports = (app, routes) => {
      */
     app.post('/api/public/v0/user/location', routes.views.api.setLocation);
 
-
+    /**
+     * @api {patch} /api/public/v0/user/avatar Upload user avatar
+     * @apiName Upload avatar
+     * @apiGroup Common
+     *
+     * @apiHeader {String} Authorization User authorization token.
+     * @apiParam {File} file User avatar image
+     *
+     * @apiUse ResponseSuccess
+     *
+     * @apiUse ResponseError
+     */
     app.patch('/api/public/v0/user/avatar', routes.views.api.uploadAvatar);
 };

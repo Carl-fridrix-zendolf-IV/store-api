@@ -24,7 +24,8 @@ const FREE_METHODS = [
 
     '/api/public/v0/facebook/auth',
     '/api/public/v0/facebook/registration',
-    '/api/internal/v1/user/auth'
+    '/api/internal/v1/user/auth',
+    '/api/public/v0/user/avatar'
 ];
 /**
     Initialises the standard view locals.

@@ -67,7 +67,7 @@ exports = module.exports = (app) => {
     /**
     * @apiDefine OrdersListSucces
     *
-    * @apiSuccess {Object} data Data object
+    * @apiSuccess {Object[]} data Data object
     * @apiSuccess {String} data._id Order MongoDB id.
     * @apiSuccess {String} data.name Order unique ID for mobile apps.
     * @apiSuccess {Date} data.statusChangeDate Date of last change status request.
@@ -85,14 +85,13 @@ exports = module.exports = (app) => {
     * @apiSuccess {Number[]} data.address.geo Delivery longitude and latitude.
     *
     * @apiSuccess {String} data.notes Order notes.
-    * @apiSuccess {Object[]} data.products List of products.
+    * @apiSuccess {String} data.createdAt Order created date.
     *
     * @apiSuccess {Object} data.status Status description.
     * @apiSuccess {String} data.status._id Status id.
     * @apiSuccess {String} data.status.name Status name.
     * @apiSuccess {Number} data.status.number Status number.
     *
-    * @apiSuccess {Date} data.createdAt Order create date.
     * @apiSuccess {Object} data.payment Payment description.
     * @apiSuccess {String} data.payment._id Payment id.
     * @apiSuccess {String} data.payment.name Payment name.
@@ -100,6 +99,13 @@ exports = module.exports = (app) => {
     *
     * @apiSuccess {Object} data.customer Customer info.
     * @apiSuccess {Object} data.professional Professional info.
+    *
+    * @apiSuccess {Object[]} data.skills List of skills.
+    *
+    * @apiSuccess {Object[]} data.languages List of languages.
+    * @apiSuccess {Object[]} data.grades List of grades.
+    * @apiSuccess {String[]} data.linked_orders_list List of copied orders.
+    *
     */
 
     // ************ API ROUTING CODE STARTS HERE ******************
