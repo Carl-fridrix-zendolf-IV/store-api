@@ -30,7 +30,7 @@ exports = module.exports = function(done) {
         new Promise((resolve, reject) => {
             new Status.model({
                 name: "Completed",
-                number: 0
+                number: 4
             }).save(resolve())
         })
     ]

@@ -5,8 +5,6 @@ const keystone = require('keystone'),
     path = require("path"),
     temp_dir = path.join('../temp/'),
     https = require('https'),
-    multer  = require('multer'),
-    upload = multer({dest: './'}),
     fs = require('fs'),
     async = require('async'),
 
@@ -108,7 +106,7 @@ var createPush = (user_id, receiver, notify_id, order_id) => {
 
         req.write(JSON.stringify(message));
         req.end();
-    }
+    };
 
     Notifications.model.findOne({number: Number(notify_id)}).then(data => {
         let message = {
@@ -499,8 +497,8 @@ exports = module.exports = {
                     reviewed: {$first: "$reviewed"},
                     rating: {$first: "$rating"},
                     avatar: {$first: "$avatar"},
-                    skills: { $push: "$skills_obj" },
-                    languages: { $push: "$languages_obj" },
+                    skills: { $addToSet: "$skills_obj" },
+                    languages: { $addToSet: "$languages_obj" },
                     grades: { $first: "$grades_obj" }
                 }
             }
@@ -843,16 +841,15 @@ exports = module.exports = {
                 {$lookup: {from: "grades", localField: "grades", foreignField: "_id", as: "grades_obj"}},
                 {$unwind: "$grades_obj"},
 
-                {$unwind: {path: "$linked_orders", preserveNullAndEmptyArrays: true}},
-                {$lookup: {from: "orders", localField: "linked_orders", foreignField: "_id", as: "linked_orders_list"}},
-                {$unwind: "$linked_orders_list"},
+                // {$unwind: {path: "$linked_orders", preserveNullAndEmptyArrays: true}},
+                // {$lookup: {from: "orders", localField: "linked_orders", foreignField: "_id", as: "linked_orders_list"}},
+                // {$unwind: "$linked_orders_list"},
 
                 // group
                 {
                     $group: {
                         _id: "$_id",
                         statusChangeDate: {$first: '$statusChangeDate'},
-                        route: {$first: '$route'},
                         name: {$first: '$name'},
                         address: {$first: '$addr'},
                         notes: {$first: '$note'},
@@ -861,10 +858,12 @@ exports = module.exports = {
                         payment: {$first: "$payment_type_obj"},
                         customer: {$first: '$customer_obj'},
                         professional: {$first: '$prof_obj'},
+                        duration: {$first: "$duration"},
+                        // summary: {$first: "$summary"},
                         skills: {$addToSet: "$skillsObject"},
                         languages: {$addToSet: "$language_obj"},
                         grades: {$addToSet: "$grades_obj"},
-                        linked_orders_list: {$addToSet: "$linked_orders_list"}
+                        linked_orders_list: {$first: "$linked_orders"}
                     }
                 }
             ]).exec((err, data) => {
@@ -878,7 +877,18 @@ exports = module.exports = {
                         i.map_icon.filename = 'https://' + 'prod.butler-hero.org' + '/files/' + i.map_icon.filename;
                     }
 
+                    var arr = item.linked_orders_list.filter(i => {
+                       return i.toString() !== item._id.toString();
+                    });
+
+                    item.linked_orders_list = arr;
+                    item.summary = item.skills.reduce((sum, current) => {
+                        return sum + current.price;
+                    }, 0);
+
+
                     if (item.customer) {
+                        delete item.customer.addrs;
                         delete item.customer.password;
                         delete item.customer.user_active;
                         delete item.customer.passCode;
@@ -891,7 +901,7 @@ exports = module.exports = {
                         delete item.professional.user_active;
                         delete item.professional.passCode;
                         delete item.professional.canAccessKeystone;
-                        delete item.professional.__v
+                        delete item.professional.__v;
                     }
                 }
 
@@ -927,11 +937,11 @@ exports = module.exports = {
 
                     switch (req.params.status) {
                         case 'active':
-                            statusNumber = 0;
+                            statusNumber = 1;
                             findProperties.$and.push({'prof_id': mongoose.Types.ObjectId(user._id)});
                             break;
                         case 'pending':
-                            statusNumber = 1;
+                            statusNumber = 0;
                             break;
                     }
 
@@ -1020,7 +1030,6 @@ exports = module.exports = {
             });
 
             // Find status id for dafault status
-            // TODO: set default status active in Orders model for Admin UI
             Status.model.find()
                 .then(data => {
                     for (let item of data) {
@@ -1079,10 +1088,10 @@ exports = module.exports = {
         let setObject;
 
         switch (req.params.status) {
-            case 'active':
+            case 'pending':
                 statusNumber = 0;
                 break;
-            case 'pending':
+            case 'active':
                 statusNumber = 1;
                 break;
             case 'reject':
@@ -1103,15 +1112,20 @@ exports = module.exports = {
 
         let changeOrder = (statusId, num) => {
 
-            if (num == 1) {
+            if (num == 0) {
                 setObject = {
                     prof_id: null,
                     status: mongoose.Types.ObjectId(statusId)
                 }
             }
-            else {
+            else if (num == 1) {
                 setObject = {
                     prof_id: mongoose.Types.ObjectId(user._id),
+                    status: mongoose.Types.ObjectId(statusId)
+                }
+            }
+            else {
+                setObject = {
                     status: mongoose.Types.ObjectId(statusId)
                 }
             }
@@ -1139,13 +1153,13 @@ exports = module.exports = {
                     _id: mongoose.Types.ObjectId(orderId)
                 }).then(data => {
                     switch (statusNumber) {
-                        // Order update to active status, send PUSH to customer
+                        // Order created with status pending, do nothing
                         case 0:
-                            createPush(data.customer_id, 'CUSTOMER', 101, data._id);
                             break;
 
-                        // Order created with status pending, do nothing
+                        // Order update to active status, send PUSH to customer
                         case 1:
+                            createPush(data.customer_id, 'CUSTOMER', 101, data._id);
                             break;
 
                         // Order cancelled by professional, send push to customer
