@@ -61,6 +61,8 @@ User.schema.add({
     }
 });
 
+User.schema.index({location: '2dsphere'});
+
 User.schema.plugin(uniqueValidator);
 
 User.register();

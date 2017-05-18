@@ -986,21 +986,21 @@ exports = module.exports = {
                 })
             }
 
-            let skillsArr = req.body.skills.map(item => {
+            this.skillsArr = req.body.skills.map(item => {
                 return mongoose.Types.ObjectId(item);
             });
 
-            let languagesArr = req.body.languages.map(item => {
+            this.languagesArr = req.body.languages.map(item => {
                 return mongoose.Types.ObjectId(item);
             });
 
-            let gradesArr = req.body.grades.map(item => {
+            this.gradesArr = req.body.grades.map(item => {
                 return mongoose.Types.ObjectId(item);
             });
 
             // Find products in storage for total price of order
             Product.model.find({
-                _id: {$in: skillsArr}
+                _id: {$in: this.skillsArr}
             }, (err, docs) => {
                 for (let item of docs) {
                     totalPrice += Number(item.price);
@@ -1017,9 +1017,9 @@ exports = module.exports = {
                 name: generateOrderNumber(),
                 status: mongoose.Types.ObjectId(req.body.status),
 
-                products: skillsArr,
-                languages: languagesArr,
-                grades: gradesArr,
+                products: this.skillsArr,
+                languages: this.languagesArr,
+                grades: this.gradesArr,
                 duration: Number(req.body.duration),
 
                 customer_id: mongoose.Types.ObjectId(user._id),
@@ -1047,7 +1047,6 @@ exports = module.exports = {
                 }, err => {
                     res.status(500).json({result: 'Error', message: err.message});
                 })
-
         };
 
         this.saveOrder = () => {
@@ -1068,10 +1067,37 @@ exports = module.exports = {
 
                         Order.model.update({_id: { $in: this.ids }}, {linked_orders: this.orders}, {multi: true}).then((err, result) => {
                             if (err) return console.log(err);
-                        })
+                        });
+
+                        this.findProfessional();
                     }
                 })
             }
+        };
+
+        this.findProfessional = () => {
+            User.model.find({
+                $and: [
+                    // {grades: {$in: this.gradesArr}},
+                    {languages: {$in: this.languagesArr}},
+                    {skills: {$in: this.skillsArr}},
+                    {location: {
+                        $near: {
+                            $geometry: {
+                                type: "Point" ,
+                                coordinates: req.body.addr.geo
+                            },
+                            $maxDistance: 1000, // in meters
+                            $minDistance: 0
+                        }
+                    }}
+                ],
+            }).exec((err, docs) => {
+                if (err)
+                    console.log('Error', err.message);
+
+                console.log(docs);
+            })
         };
 
         this.checkQuantity();
