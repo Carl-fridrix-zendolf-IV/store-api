@@ -859,7 +859,6 @@ exports = module.exports = {
                         customer: {$first: '$customer_obj'},
                         professional: {$first: '$prof_obj'},
                         duration: {$first: "$duration"},
-                        // summary: {$first: "$summary"},
                         skills: {$addToSet: "$skillsObject"},
                         languages: {$addToSet: "$language_obj"},
                         grades: {$addToSet: "$grades_obj"},
@@ -886,6 +885,8 @@ exports = module.exports = {
                         return sum + current.price;
                     }, 0);
 
+                    // TODO: leftDuration = duration - current time + time of switch to active
+                    item.leftDuration = ((item.duration * 60) - new Date().getTime() + new Date(item.statusChangeDate).getTime()) / 60;
 
                     if (item.customer) {
                         delete item.customer.addrs;
@@ -894,6 +895,9 @@ exports = module.exports = {
                         delete item.customer.passCode;
                         delete item.customer.canAccessKeystone;
                         delete item.customer.__v
+
+                        if (item.customer.avatar)
+                            item.customer.avatar.filename = 'https://prod.butler-hero.org' + item.customer.avatar.filename;
                     }
 
                     if (item.professional) {
@@ -902,6 +906,9 @@ exports = module.exports = {
                         delete item.professional.passCode;
                         delete item.professional.canAccessKeystone;
                         delete item.professional.__v;
+
+                        if (item.professional.avatar)
+                            item.professional.avatar.filename = 'https://prod.butler-hero.org' + item.professional.avatar.filename;
                     }
                 }
 
@@ -961,6 +968,10 @@ exports = module.exports = {
 
         this.orders = new Array();
         this.ids = new Array();
+        this.distances = [1000, 2000, 5000, 10000, 15000];
+        this.index = 0;
+        this.professionalsList = new Array();
+        this.cancelStatusId = null;
 
         this.checkQuantity = () => {
             if (req.body.quantity > 1)
@@ -1034,11 +1045,11 @@ exports = module.exports = {
                 .then(data => {
                     for (let item of data) {
                         if (item.number === 0) {
-
                             newOrder.status = mongoose.Types.ObjectId(item._id);
                             newOrder.summary = totalPrice;
-
-                            break;
+                        }
+                        else if (item.number === 5) {
+                            this.cancelStatusId = mongoose.Types.ObjectId(item._id);
                         }
                     }
 
@@ -1076,9 +1087,12 @@ exports = module.exports = {
         };
 
         this.findProfessional = () => {
+            if (this.index == (this.distances.length))
+                return this.cancelOrders();
+
             User.model.find({
                 $and: [
-                    // {grades: {$in: this.gradesArr}},
+                    {grades: {$in: this.gradesArr}},
                     {languages: {$in: this.languagesArr}},
                     {skills: {$in: this.skillsArr}},
                     {location: {
@@ -1087,16 +1101,45 @@ exports = module.exports = {
                                 type: "Point" ,
                                 coordinates: req.body.addr.geo
                             },
-                            $maxDistance: 1000, // in meters
+                            $maxDistance: this.distances[this.index], // in meters
                             $minDistance: 0
                         }
                     }}
-                ],
+                ]
             }).exec((err, docs) => {
                 if (err)
                     console.log('Error', err.message);
+                else if (!docs.length) {
+                    this.index++;
+                    return this.findProfessional();
+                }
 
-                console.log(docs);
+                for(let item of docs) {
+                    this.professionalsList.push(item);
+                }
+
+                if (this.professionalsList < req.body.quantity) {
+                    this.index++;
+                    return this.findProfessional();
+                } else {
+                    return this.sendPushToProfessionals();
+                }
+            });
+        };
+
+        this.sendPushToProfessionals = () => {
+            for(let item of this.professionalsList) {
+                createPush(item, 'PROFF', 105, this.ids[0]);
+            }
+        };
+
+        this.cancelOrders = () => {
+            console.log(this.ids);
+            Orders.model.updateMany({_id: {$in: this.ids}}, {status: this.cancelStatusId}).exec((err, result) => {
+                if (err)
+                    console.log('Error', err.message);
+
+                console.log(result);
             })
         };
 

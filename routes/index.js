@@ -100,11 +100,14 @@ exports = module.exports = (app) => {
     * @apiSuccess {Object} data.customer Customer info.
     * @apiSuccess {Object} data.professional Professional info.
     *
+    * @apiSuccess {Number} data.duration During this time (minutes) order must be completed.
     * @apiSuccess {Object[]} data.skills List of skills.
     *
     * @apiSuccess {Object[]} data.languages List of languages.
     * @apiSuccess {Object[]} data.grades List of grades.
-    * @apiSuccess {String[]} data.linked_orders_list List of copied orders.
+    * @apiSuccess {String[]} data.linked_orders_list List of copied orders, exclude current order.
+    * @apiSuccess {Number} data.summary Summa of skills prices.
+    * @apiSuccess {Number} data.leftDuration How much time passed from last status update (leftDuration = duration - current time + time of switch status)
     *
     */
 
