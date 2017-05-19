@@ -1148,13 +1148,10 @@ exports = module.exports = {
     changeStatus: (req, res) => {
         let user = req.USER_TOKEN_DATA;
 
-        // TODO
-        // if (!user.professional)
-        //     return res.status(400).json({result: 'Error', message: 'Customer can\'t change order status'});
-
         let orderId = req.params.order_id;
         let statusNumber;
         let setObject;
+        let findObject;
 
         switch (req.params.status) {
             case 'pending':
@@ -1174,12 +1171,32 @@ exports = module.exports = {
                 break;
         }
 
-        Status.model.findOne({number: statusNumber})
-            .then(data => {
-                changeOrder(data._id, data.number);
-            });
+        async.parallel([
+            callback => {
+                Status.model.findOne({number: statusNumber})
+                    .then(data => {
+                        callback(null, {status_id: data._id, status_num: data.number});
+                    });
+            },
+            callback => {
+                Order.model.findOne({_id: mongoose.Types.ObjectId(orderId)}, {_id: 1, linked_orders: 1})
+                    .then(doc => {
+                        callback(null, doc);
+                    })
+            }
+        ], (err, results) => {
+            let statusId = results[0].status_id;
+            let statusNum = results[0].status_num;
+            let links = results[1].linked_orders;
 
-        let changeOrder = (statusId, num) => {
+            // let links = results[1].linked_orders.map(item => {
+            //     return mongoose.Types.ObjectId(item);
+            // });
+
+            changeOrder(statusId, statusNum, links);
+        });
+
+        let changeOrder = (statusId, num, linkedOrders) => {
 
             if (num == 0) {
                 setObject = {
@@ -1193,20 +1210,24 @@ exports = module.exports = {
                     status: mongoose.Types.ObjectId(statusId)
                 }
             }
+            else if (num == 2 || num == 3) {
+                findObject = { _id: {$in: linkedOrders} };
+                setObject = { status: mongoose.Types.ObjectId(statusId) };
+            }
             else {
-                setObject = {
-                    status: mongoose.Types.ObjectId(statusId)
-                }
+                setObject = { status: mongoose.Types.ObjectId(statusId) };
+                findObject = { _id: mongoose.Types.ObjectId(orderId) };
             }
 
             setObject.statusChangeDate = new Date();
 
             Order.model.update(
-                {
-                    _id: mongoose.Types.ObjectId(orderId)
-                },
+                findObject,
                 {
                     '$set': setObject
+                },
+                {
+                    multi: true
                 },
                 (err, result) => {
                     if (err)
