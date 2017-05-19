@@ -897,7 +897,7 @@ exports = module.exports = {
                         delete item.customer.__v
 
                         if (item.customer.avatar)
-                            item.customer.avatar.filename = 'https://prod.butler-hero.org' + item.customer.avatar.filename;
+                            item.customer.avatar.filename = 'https://prod.butler-hero.org/files/' + item.customer.avatar.filename;
                     }
 
                     if (item.professional) {
@@ -908,7 +908,7 @@ exports = module.exports = {
                         delete item.professional.__v;
 
                         if (item.professional.avatar)
-                            item.professional.avatar.filename = 'https://prod.butler-hero.org' + item.professional.avatar.filename;
+                            item.professional.avatar.filename = 'https://prod.butler-hero.org/files/' + item.professional.avatar.filename;
                     }
                 }
 
